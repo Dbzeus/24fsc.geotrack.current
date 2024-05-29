@@ -37,7 +37,7 @@ const String BRANCH_LIST_API = "Master/GetBranch";
 const String INSERT_UPDATE_EMPLOYEE = "Master/InsertUpdateEmployee";
 
 //notification
-const DASHBOARD_URL = "Dashboard/GetEmployeeDashboard";
+const DASHBOARD_URL = "GeoTrack/GetEmployeeDashboard";
 const ACTIVITY_URL = "Dashboard/GetEmpLatLong";
 const NOTIFICATION_URL = "Communication/GetNotification";
 const CHANGE_MPIN_URL = "Account/ResetMPIN";

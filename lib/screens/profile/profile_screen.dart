@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geotrack24fsc/models/MenuResponse.dart';
 import 'package:geotrack24fsc/routes/app_routes.dart';
 import 'package:geotrack24fsc/screens/profile/profile_screen_controller.dart';
 import 'package:get/get.dart';
@@ -26,16 +28,21 @@ class ProfileScreen extends GetView<ProfileScreenController> {
               children: [
                 Row(
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        color: blackColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: SvgPicture.asset(
-                        "assets/icons/back.svg",
-                        fit: BoxFit.scaleDown,
+                    GestureDetector(
+                      onTap: () {
+                        Get.back();
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: blackColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: SvgPicture.asset(
+                          "assets/icons/back.svg",
+                          fit: BoxFit.scaleDown,
+                        ),
                       ),
                     ),
                     SizedBox(
@@ -89,12 +96,12 @@ class ProfileScreen extends GetView<ProfileScreenController> {
                       const SizedBox(
                         width: 16,
                       ),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Dinesh", //controller.name.value,
+                              controller.name.value,
                               style: TextStyle(
                                 color: blackColor,
                                 fontWeight: FontWeight.w700,
@@ -103,7 +110,7 @@ class ProfileScreen extends GetView<ProfileScreenController> {
                             Row(
                               children: [
                                 Text(
-                                  "Admin", //controller.designation.value,
+                                  controller.designation.value,
                                   style: TextStyle(
                                       color: blackColor, letterSpacing: 1),
                                 ),
@@ -116,7 +123,7 @@ class ProfileScreen extends GetView<ProfileScreenController> {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    "Employee", //controller.role.value,
+                                    controller.role.value,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         color: blackColor, letterSpacing: 1),
@@ -127,97 +134,41 @@ class ProfileScreen extends GetView<ProfileScreenController> {
                           ],
                         ),
                       ),
-                      Container(
-                          width: 40,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            color: blackColor,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.logout_rounded,
-                            color: whiteColor,
-                          )),
+                      GestureDetector(
+                        onTap: () {
+                          controller.appLogout(isHaveDialog: true);
+                        },
+                        child: Container(
+                            width: 40,
+                            height: 40,
+                            decoration: const BoxDecoration(
+                              color: blackColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.logout_rounded,
+                              color: whiteColor,
+                            )),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(
                   height: 16,
                 ),
-                const Text(
-                  "Menu",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: blackColor,
-                    fontWeight: FontWeight.bold,
+                Obx(
+                  () => Expanded(
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: controller.menu1.length,
+                        itemBuilder: (_, index) {
+                          return buildMainMenu(controller.menu1[index]);
+                        }),
                   ),
                 ),
-                Divider(
-                  color: blackColor.withAlpha(30),
-                ),
-                const SizedBox(
-                  height: 8,
-                ),
-                GridView.builder(
-                    itemCount: controller.menus.length,
-                    scrollDirection: Axis.vertical,
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 1.1,
-                      mainAxisSpacing: 16,
-                      crossAxisSpacing: 16,
-                    ),
-                    itemBuilder: (_, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          //debugPrint("controller.menus[index]['route']");
-                          Get.toNamed(controller.menus[index]['route']);
-                        },
-                        child: Column(
-                          children: [
-                            Container(
-                              height: 60,
-                              width: 60,
-                              padding: const EdgeInsets.all(14),
-                              decoration: BoxDecoration(
-                                  color: whiteColor,
-                                  borderRadius: BorderRadius.circular(16),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 2,
-                                        offset: const Offset(3, 2)),
-                                    BoxShadow(
-                                        color: Colors.black12,
-                                        blurRadius: 4,
-                                        offset: const Offset(3, 5)),
-                                  ]),
-                              child: SvgPicture.asset(
-                                controller.menus[index]['path'],
-                                //,"assets/menu/dashboard.svg",
-                                fit: BoxFit.scaleDown,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              controller.menus[index]['title'],
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: blackColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
-                const SizedBox(
+
+                /* const SizedBox(
                   height: 16,
                 ),
                 const Text(
@@ -258,7 +209,6 @@ class ProfileScreen extends GetView<ProfileScreenController> {
                                   offset: const Offset(3, 5)),
                             ]),
                         child: SvgPicture.asset(
-
                           "assets/menu/performancereport.svg",
                           fit: BoxFit.scaleDown,
                         ),
@@ -278,11 +228,85 @@ class ProfileScreen extends GetView<ProfileScreenController> {
                       ),
                     ],
                   ),
-                )
+                )*/
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  buildMainMenu(Menu menu) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          menu.mainMenu,
+          style: TextStyle(
+            fontSize: 16,
+            color: blackColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Divider(
+          color: blackColor.withAlpha(30),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        GridView.builder(
+            itemCount: menu.subMenu.length,
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            physics: const BouncingScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 1.05,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+            ),
+            itemBuilder: (_, index) {
+              return buildSubMenu(menu.subMenu[index]);
+            }),
+      ],
+    );
+  }
+
+  buildSubMenu(SubMenu subMenu) {
+    return GestureDetector(
+      onTap: () {
+        Get.toNamed(subMenu.action.toString().removeAllWhitespace);
+      },
+      child: Column(
+        children: [
+          Container(
+            height: 60,
+            width: 60,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+                color: whiteColor,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: boxShadow),
+            child: CachedNetworkImage(
+              imageUrl: subMenu.icon,
+            ),
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          Expanded(
+            child: Text(
+              subMenu.title, // controller.menus[index]['title'],
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                color: blackColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

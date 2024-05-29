@@ -2,13 +2,15 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:geotrack24fsc/utils/session.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 
 import '../../helpers/colors.dart';
 import '../../routes/app_routes.dart';
 
 RxInt pageIndex = 0.obs;
-
+final box = GetStorage();
 PageController pageController = PageController(initialPage: 0);
 RxList<Widget> pages = <Widget>[
   Page(
@@ -80,7 +82,8 @@ class OnboardingScreen extends StatelessWidget {
                       GestureDetector(
                         onTap: () {
                           if (pageIndex.value == (pages.length - 1)) {
-                            Get.toNamed(Routes.mobileLogin);
+                            box.write(Session.isMobileLogin,true);
+                            Get.offAndToNamed(Routes.mobileLogin);
                           } else {
                             pageIndex.value = pageIndex.value + 1;
                             pageController.nextPage(

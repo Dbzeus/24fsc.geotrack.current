@@ -28,7 +28,7 @@ apply from: "${background_geolocation.projectDir}/background_geolocation.gradle"
 */
 
 android {
-    namespace "com.dbzeus.24fsc.geotrack"
+    namespace "com.dbzeus.geotrack24FSC"
     compileSdkVersion  34//rootProject.ext.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -47,7 +47,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.dbzeus.24fsc.geotrack"
+        applicationId "com.dbzeus.geotrack24FSC"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 22//rootProject.ext.minSdkVersion

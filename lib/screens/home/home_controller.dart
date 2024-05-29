@@ -60,7 +60,7 @@ class HomeController extends GetxController {
   String deviceId = '-1';
   final _box = GetStorage();
   RxList timelines = RxList();
-  RxBool isLoading = false.obs;
+  RxBool isLoading = false.obs,isCanceled = true.obs;
 
   late PackageInfo packageInfo;
   Rx<String> currentDate = "".obs;
@@ -106,7 +106,9 @@ class HomeController extends GetxController {
             timelines(response.rtnData!.table);
             msg(timelines.isEmpty ? 'No Record\'s Found' : '');
           } else {
+            debugPrint("ADFSDAGSFHFDH");
             msg(response.rtnMessage);
+            timelines([]);
           }
         }
       } catch (e) {
@@ -215,9 +217,14 @@ class HomeController extends GetxController {
             altitudeAccuracy: 0,
             headingAccuracy: 0);
 
-        if (position == null) return;
       }
-
+      isCanceled(true); // setting true, because its always true for slider button. if position gives null then only,change to false
+      if (position == null) {
+        debugPrint("isbeforeCanceled: ${isCanceled.toString()}");
+        isCanceled(false);
+        debugPrint("isCanceled: ${isCanceled.toString()}");
+        return;
+      };
       showLoader(title: 'Update Status');
       //update status
       var params = {

@@ -1,6 +1,7 @@
 import 'package:alice/alice.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:geotrack24fsc/routes/app_pages.dart';
 import 'package:geotrack24fsc/routes/app_routes.dart';
@@ -13,6 +14,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //debugPaintSizeEnabled = true; for layout bound
   //check session
   await GetStorage.init();
 
@@ -21,7 +23,9 @@ Future<void> main() async {
 
   debugPrint("LOGIN: ${box.read(Session.isAppLogin).toString()}");
 
-  if (box.read(Session.isAppLogin) ?? false) {
+  if (box.read(Session.isMobileLogin) ?? false) {
+    initial = Routes.mobileLogin;
+  } else if (box.read(Session.isAppLogin) ?? false) {
     initial = Routes.home;
   }
   runApp(MyApp(initial));
@@ -44,7 +48,9 @@ class MyApp extends StatelessWidget {
       navigatorKey: alice.getNavigatorKey(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: secondaryColor),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: primaryColor,
+        ),
         useMaterial3: true,
         textTheme: GoogleFonts.montserratTextTheme(),
       ),

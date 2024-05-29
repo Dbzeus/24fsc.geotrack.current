@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 
 showToastMsg(String msg) {
   Fluttertoast.showToast(
-    backgroundColor: primaryColor,
+    backgroundColor: lightBgGreenColor,
+    textColor:  blackColor,
+
     msg: msg, timeInSecForIosWeb: 3, toastLength: Toast.LENGTH_SHORT,);
 }
 

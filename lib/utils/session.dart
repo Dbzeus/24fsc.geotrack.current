@@ -11,6 +11,7 @@ class Session {
   static const String deviceID = "deviceID";
 
   static const String isAppLogin = "isAppLogin";
+  static const String isMobileLogin = "isMobileLogin";
   static const String isAutoFetch = "isAutoFetch";
   static const String isCustomer = "isCustomer";
   static const String isMarketing = "isMarketing";
@@ -19,7 +20,6 @@ class Session {
   //String
   static const String token = "token";
   static const String version = "version";
-  static const String password = "password";
   static const String userImage = "userImage";
   static const String firstName = "firstName";
   static const String userEmail = "userEmail";

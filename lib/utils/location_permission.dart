@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:geotrack24fsc/utils/session.dart';
 import 'package:geotrack24fsc/widgets/custom_button.dart';
 import 'package:get/get.dart';
@@ -58,7 +59,6 @@ Future<bool> checkLocationPermission1() async {
             onTap: () {
               openAppSettings();
               Get.back();
-
             }));
     return false;
   }
@@ -80,7 +80,7 @@ Future<Position?> getCurrentLocation({bool showMap = true}) async {
     debugPrint('service enable / not --- $_isServiceEnable');
     if (_isServiceEnable) {
       Future.delayed(const Duration(seconds: 2),
-              () async => await getLocation(showMap: showMap));
+          () async => await getLocation(showMap: showMap));
       return null;
     } else {
       return await getCurrentLocation(showMap: showMap);
@@ -92,9 +92,8 @@ Future<Position?> getCurrentLocation({bool showMap = true}) async {
 
 Future<Position?> getCurrentLocationForBackgroundFetch() async {
   Position? data = await Geolocator.getCurrentPosition();
-  return  data;
+  return data;
 }
-
 
 Future<Position?> getLocation({bool showMap = true}) async {
   var p = await Geolocator.checkPermission();
@@ -105,19 +104,21 @@ Future<Position?> getLocation({bool showMap = true}) async {
         Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Row(
+              InkWell(
+                  onTap: () {
+                    Get.back();
+                  },
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.w700),
+                  )),
+              /*  Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  InkWell(
-                      onTap: () {
-                        Get.back();
-                      },
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.w700),
-                      )),
+
                   InkWell(
                       onTap: () {
                         Get.back(result: data);
@@ -128,7 +129,7 @@ Future<Position?> getLocation({bool showMap = true}) async {
                             color: Colors.black, fontWeight: FontWeight.bold),
                       )),
                 ],
-              ),
+              ),*/
               const Divider(),
               Expanded(
                 child: ClipRRect(
@@ -152,17 +153,27 @@ Future<Position?> getLocation({bool showMap = true}) async {
                   ),
                 ),
               ),
+              const SizedBox(
+                height: 20,
+              ),
+              CustomButton(
+                  btnColor: secondaryColor,
+                  text: "Select",
+                  onTap: () {
+                    Get.back(result: data);
+                  })
             ],
           ),
         ),
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8),
-              topRight: Radius.circular(8),
-            )),
-        backgroundColor: Colors.white,
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        )),
+        backgroundColor: whiteColor,
         enableDrag: false,
         isDismissible: false,
+
       );
     }
     return data;
@@ -171,6 +182,3 @@ Future<Position?> getLocation({bool showMap = true}) async {
     return null;
   }
 }
-
-
-

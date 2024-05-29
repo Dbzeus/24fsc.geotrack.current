@@ -59,8 +59,6 @@ class MobileLoginController extends GetxController {
     _box.write(Session.version, packageInfo.version);
     appVersion('App Version ${packageInfo.version}');
 
-    mobNoController.text = _box.read(Session.userPhone) ?? '';
-    passwordController.text = _box.read(Session.password) ?? '';
     if (Platform.isAndroid) {
       info = await _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
     } else if (Platform.isIOS) {
@@ -159,7 +157,6 @@ class MobileLoginController extends GetxController {
 
   goToHome(List<RtnData> rtnData) {
     _box.write(Session.userid, rtnData[0].userID);
-    _box.write(Session.password, passwordController.text);
     _box.write(Session.userImage, rtnData[0].imagePath);
     _box.write(Session.firstName, rtnData[0].firstName);
     _box.write(Session.userEmail, rtnData[0].mailID);
@@ -169,6 +166,7 @@ class MobileLoginController extends GetxController {
     _box.write(Session.roleName, rtnData[0].roleName);
     _box.write(Session.designation, rtnData[0].designation);
     _box.write(Session.isAppLogin, true);
+    _box.write(Session.isMobileLogin, false);
     _box.write(Session.isCustomer, rtnData[0].isCustomer);
     _box.write(Session.customerId, rtnData[0].customerID);
     _box.write(Session.isMarketing, rtnData[0].isMarketing);

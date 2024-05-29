@@ -5,31 +5,42 @@ import 'package:intl/intl.dart';
 import 'package:mat_month_picker_dialog/mat_month_picker_dialog.dart';
 
 import '../../apis/api_call.dart';
-import '../../models/dashboard_response.dart';
+import '../../models/DashboardResponse.dart';
+
 import '../../utils/constants.dart';
 import '../../utils/session.dart';
 
-class DashboardController extends GetxController{
-  Rx<String> currentDate = "".obs;
+class DashboardController extends GetxController {
+
   DateTime now = DateTime.now();
-  RxInt daysInMonth = 0.obs;
-  List<DateTime> days = [];
+  RxString date = "".obs;
+  RxInt daysInMonth = 0.obs, isSelectedDate = (-1).obs;
+  RxList<DateTime> days = <DateTime>[].obs;
+  List daysofWeek = [];
 
-
+  RxList list = RxList();
+  Rx<DashboardResponseData?> data = Rx(null);
+  RxString selectedMonth = ''.obs;
+  DateFormat showFormat = DateFormat('MMM yyyy');
+  DateTime selected = DateTime.now();
+  final _box = GetStorage();
+  RxBool isLoading = true.obs;
+  int userId = -1;
 
   @override
   void onInit() async {
     super.onInit();
-    currentDate(DateFormat('MMM dd yyyy').format(DateTime.now()));
 
+    selectedMonth(showFormat.format(DateTime.now()));
+    isSelectedDate(int.parse(DateTime.now().day.toString()));
     daysInMonth.value = DateUtils.getDaysInMonth(now.year, now.month);
-    days = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
-    debugPrint("days: ${days.toString()}");
-    today(showFormat.format(DateTime.now()));
+    days.value = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
     userId = _box.read(Session.userid) ?? -1;
-    getDashboard();
+    getDashboard(date: DateTime.now().toString().split(" ")[0]);
 
   }
+
+
 
   List<DateTime> getAllDaysInMonth(int year, int month) {
     // Get the first day of the month
@@ -39,7 +50,7 @@ class DashboardController extends GetxController{
     int daysInMonth = DateUtils.getDaysInMonth(year, month);
 
     // Create a list to store all days in the month
-    List<DateTime> days = [];
+    RxList<DateTime> days = <DateTime>[].obs;
 
     // Loop through each day and add it to the list
     for (int day = 1; day <= daysInMonth; day++) {
@@ -49,49 +60,32 @@ class DashboardController extends GetxController{
     return days;
   }
 
-  changeDate() async {
-    try {
-      DateTime dt = DateFormat("MMM dd yyyy").parse(currentDate.value);
-      final DateTime? pickedDate = await showDatePicker(
-          context: Get.context!,
-          initialDate: dt,
-          firstDate: DateTime.now().subtract(const Duration(days: 45)),
-          lastDate: DateTime.now());
+  String getDayOfWeek(DateTime date) {
+    const List<String> daysOfWeek = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
 
-      if (pickedDate != null) {
-        currentDate(DateFormat("MMM dd yyyy").format(pickedDate));
-      }
-    } catch (e) {
-      //ignored
-    }
+    return daysOfWeek[date.weekday - 1];
   }
 
 
-  RxList list = RxList();
-  Rx<DashboardData?> data = Rx(null);
-  RxString today = ''.obs, month = ''.obs;
-  DateFormat showFormat = DateFormat('MMM yyyy');
-  DateTime selected = DateTime.now();
-  final _box = GetStorage();
-  RxBool isLoading = true.obs;
-  int userId = -1;
 
-
-
-  void getDashboard() async {
+  void getDashboard({String date = ""}) async {
     if (await isNetConnected()) {
       isLoading(true);
-      month(DateFormat('MMM').format(showFormat.parse(today.value)));
 
       DashboardResponse? response = await ApiCall().getDashboardDetails(
-          '$userId',
-          '${selected.month.toString().length == 1 ? '0${selected.month}' : selected.month}-01-${selected.year}');
-
+          '$userId',date );
       if (response != null) {
-        if (response.status) {
-          if (response.returnData != null) {
-            data(response.returnData);
-            list(response.returnData!.employeeDBDatasDTOs);
+        if (response.rtnStatus) {
+          if (response.rtnData != null) {
+            data(response.rtnData);
           }
         }
       }
@@ -109,8 +103,12 @@ class DashboardController extends GetxController{
       ).then((date) {
         if (data != null) {
           selected = date!;
-          today(showFormat.format(date));
-          getDashboard();
+          debugPrint(selected.toString());
+          selectedMonth(showFormat.format(date));
+          isSelectedDate(int.parse(selected.day.toString()));
+          daysInMonth.value = DateUtils.getDaysInMonth(selected.year, selected.month);
+          days.value = getAllDaysInMonth(selected.year, selected.month);
+          getDashboard(date: selected.toString().split(" ")[0]);
         }
       });
     } catch (e) {

@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 
 import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:slider_button/slider_button.dart';
 
 import '../../routes/app_routes.dart';
@@ -53,7 +54,7 @@ class HomeScreen extends GetView<HomeController> {
                               color: blackColor,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.line_weight_sharp,
                               color: whiteColor,
                             )),
@@ -77,14 +78,14 @@ class HomeScreen extends GetView<HomeController> {
                       GestureDetector(
                         onTap: () async {},
                         child: Container(
-                          width: 50,
+                          width: 60,
                           height: 50,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                               color: whiteColor,
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                  fit: BoxFit.scaleDown,
-                                  image: AssetImage(
+                              borderRadius: BorderRadius.circular(16),
+                              image: const DecorationImage(
+                                  fit: BoxFit.contain,
+                                  image: const AssetImage(
                                     "assets/logo/24FSC.png",
                                   ))),
                         ),
@@ -130,13 +131,68 @@ class HomeScreen extends GetView<HomeController> {
                                   ],
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {},
-                                child: const Icon(
-                                  Icons.circle_notifications,
-                                  size: 34,
-                                  color: secondaryColor,
-                                ),
+                              Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      controller.getTimeline();
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                          color: secondaryColor,
+                                          borderRadius:
+                                              BorderRadius.circular(6)),
+                                      child: const Row(
+                                        children: [
+                                          Text(
+                                            "Refresh",
+                                            style: TextStyle(
+                                                color: whiteColor,
+                                                fontSize: 12),
+                                          ),
+                                          Icon(
+                                            Icons.refresh_outlined,
+                                            size: 20,
+                                            color: whiteColor,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      DateFormat timeFormat =
+                                          DateFormat("HH:mm:ss");
+
+                                      DateTime currentTime = timeFormat.parse(
+                                          DateTime.now()
+                                              .toString()
+                                              .split(" ")[1]
+                                              .split(".")[0]);
+                                      debugPrint("currentTime ${currentTime.toString()}");
+                                      DateTime logoutTime =
+                                          timeFormat.parse("15:00:00");
+                                      debugPrint("logoutTime ${logoutTime.toString()}");
+                                      if(currentTime.isAfter(logoutTime)){
+                                        debugPrint("1");
+                                      }else{
+                                        debugPrint("2");
+                                      }
+                                      // debugPrint(
+                                      //     "${currentTime.isAfter(logoutTime)}${logoutTime.isAfter(currentTime)}");
+                                    },
+                                    child: const Icon(
+                                      Icons.circle_notifications,
+                                      size: 34,
+                                      color: secondaryColor,
+                                    ),
+                                  ),
+                                ],
                               ),
                               const SizedBox(
                                 width: 4,
@@ -147,41 +203,39 @@ class HomeScreen extends GetView<HomeController> {
                         const SizedBox(
                           height: 16,
                         ),
-                        controller.timelines.isEmpty
-                            ? Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Obx(
-                                    () => Text(
-                                      controller.msg.value,
-                                      style: const TextStyle(
-                                          color: secondaryColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12),
+                        Obx(
+                          () => controller.timelines.isEmpty
+                              ? Align(
+                                  alignment: Alignment.center,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Obx(
+                                      () => Text(
+                                        controller.msg.value,
+                                        style: const TextStyle(
+                                            color: secondaryColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12),
+                                      ),
                                     ),
                                   ),
+                                )
+                              : SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.65,
+                                  child: ListView.builder(
+                                      padding: const EdgeInsets.all(0),
+                                      itemCount: controller.timelines.length,
+                                      physics: const BouncingScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        return HistoryView(
+                                          index,
+                                          controller.timelines.length,
+                                          controller.timelines[index],
+                                        );
+                                      }),
                                 ),
-                              )
-                            : SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.65,
-
-                              child: ListView.builder(
-                                  padding: const EdgeInsets.all(0),
-                                  itemCount: controller.timelines.length,
-                                  physics: const BouncingScrollPhysics(),
-                                  itemBuilder: (context, index) {
-
-                                    return HistoryView(
-                                      index,
-                                      controller.timelines.length,
-                                      controller.timelines[index],
-                                    );
-                                  }),
-                            )
-                        // const HistoryView(),
-                        // const HistoryView(),
-                        // const HistoryView(),
+                        )
                       ],
                     ),
             ),
@@ -200,12 +254,15 @@ class HomeScreen extends GetView<HomeController> {
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20))),
                   child: SliderButton(
+                      width: MediaQuery.of(context).size.width * 0.9,
                       shimmer: false,
                       action: () async {
-                        controller.changeStatus(controller.settings.value!);
+                        await controller
+                            .changeStatus(controller.settings.value!);
 
                         ///Do something here OnSlide
-                        return true;
+
+                        return controller.isCanceled.value;
                       },
                       backgroundColor: whiteColor,
                       /* HexColor.fromHex(
@@ -213,7 +270,8 @@ class HomeScreen extends GetView<HomeController> {
                       label: Center(
                         child: Obx(
                           () => Text(
-                            controller.settings.value!.status.first.geoStatus,
+                            controller.settings.value?.status.first.geoStatus ??
+                                "",
                             style: const TextStyle(
                                 color: blackColor,
                                 fontWeight: FontWeight.bold,

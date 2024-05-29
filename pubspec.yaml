@@ -47,6 +47,7 @@ dependencies:
 
 
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -66,8 +67,8 @@ flutter_native_splash:
   android: true
   ios: true
   web: false
-  color: "#045c52"
-  color_dark: "#045c52"
+  color: "#FFFFFF"
+  color_dark: "#FFFFFF"
   image: "assets/logo/24FSC.png"
   android_12:
     image: "assets/logo/24FSC.png"

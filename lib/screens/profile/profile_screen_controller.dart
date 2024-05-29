@@ -8,6 +8,8 @@ import '../../apis/api_call.dart';
 import '../../models/MenuResponse.dart';
 import '../../routes/app_routes.dart';
 import '../../utils/constants.dart';
+import '../../utils/dialogs.dart';
+import '../../utils/loader.dart';
 import '../../utils/session.dart';
 
 class ProfileScreenController extends GetxController{
@@ -81,6 +83,26 @@ class ProfileScreenController extends GetxController{
           menu1(response.rtnData);
         }
       }
+    }
+  }
+
+  void appLogout({bool? isHaveDialog}) async {
+    bool? resp = false;
+    if (isHaveDialog == null) {
+      resp = await showAlert(
+        'Logout?',
+        'Are you sure to logout from app.',
+        'Logout',
+      );
+    } else {
+      resp = true;
+    }
+
+    if (resp != null && resp) {
+      showLoader(title: 'Logging Out');
+      _box.erase();
+      hideLoader();
+      Get.offAllNamed(Routes.mobileLogin);
     }
   }
 

@@ -16,6 +16,7 @@ import 'package:geotrack24fsc/models/user_list_response.dart';
 import '../main.dart';
 import '../models/ApplicationSettingResponse.dart';
 import '../models/CustomerListResponse.dart';
+import '../models/DashboardResponse.dart';
 import '../models/GeoHistoryResponse.dart';
 
 
@@ -25,7 +26,7 @@ import '../models/NearCompanyResponse.dart';
 import '../models/OtListResponse.dart';
 import '../models/OutstationListResponse.dart';
 
-import '../models/dashboard_response.dart';
+
 import '../models/emp_lat_lng.dart';
 import '../models/leave_list_response.dart';
 import '../models/notification_response.dart';
@@ -550,7 +551,7 @@ class ApiCall {
   Future<DashboardResponse?> getDashboardDetails(
       String userId, String date) async {
     Map<String, String> params = {
-      "EmployeeID": userId,
+      "UserID": userId,
       "ReportDate": date,
     };
 
