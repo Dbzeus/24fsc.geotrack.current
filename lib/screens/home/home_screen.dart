@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:geotrack24fsc/helpers/colors.dart';
@@ -165,26 +166,12 @@ class HomeScreen extends GetView<HomeController> {
                                     width: 4,
                                   ),
                                   GestureDetector(
-                                    onTap: () {
-                                      DateFormat timeFormat =
-                                          DateFormat("HH:mm:ss");
-
-                                      DateTime currentTime = timeFormat.parse(
-                                          DateTime.now()
-                                              .toString()
-                                              .split(" ")[1]
-                                              .split(".")[0]);
-                                      debugPrint("currentTime ${currentTime.toString()}");
-                                      DateTime logoutTime =
-                                          timeFormat.parse("15:00:00");
-                                      debugPrint("logoutTime ${logoutTime.toString()}");
-                                      if(currentTime.isAfter(logoutTime)){
-                                        debugPrint("1");
-                                      }else{
-                                        debugPrint("2");
+                                    onTap: () async {
+                                      debugPrint("XYz");
+                                      if (await FlutterBackgroundService()
+                                          .isRunning()) {
+                                        debugPrint("running in background");
                                       }
-                                      // debugPrint(
-                                      //     "${currentTime.isAfter(logoutTime)}${logoutTime.isAfter(currentTime)}");
                                     },
                                     child: const Icon(
                                       Icons.circle_notifications,

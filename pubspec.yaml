@@ -42,6 +42,9 @@ dependencies:
   image_picker:
   mat_month_picker_dialog:
   google_maps_flutter:
+  just_audio:
+  record:
+  path_provider:
 
 
 

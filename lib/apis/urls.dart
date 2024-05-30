@@ -69,4 +69,12 @@ const SUBMIT_HANDOVER_URL = "GeoTrack/SampleHandoverInsert";
 
 //Remark
 const GET_REMARK_URL = "GeoTrack/GetDailyRemarks";
+
 const SUBMIT_REMARK_URL = "GeoTrack/InsertUpdateDailyRemarks";
+
+
+const GET_VISITING_REPORT_URL = "Entry/GetVisitingReport";
+const SUBMIT_VISITING_REPORT_URL = "Entry/InsertUpdateVisitingReport";
+
+
+

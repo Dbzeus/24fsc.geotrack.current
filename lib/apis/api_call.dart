@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:developer';
 
@@ -19,17 +18,16 @@ import '../models/CustomerListResponse.dart';
 import '../models/DashboardResponse.dart';
 import '../models/GeoHistoryResponse.dart';
 
-
 import '../models/MenuResponse.dart';
 import '../models/MobileLoginResponse.dart';
 import '../models/NearCompanyResponse.dart';
 import '../models/OtListResponse.dart';
 import '../models/OutstationListResponse.dart';
 
-
 import '../models/emp_lat_lng.dart';
 import '../models/leave_list_response.dart';
 import '../models/notification_response.dart';
+
 class ApiCall {
   static final ApiCall _instance = ApiCall._internal();
 
@@ -48,11 +46,9 @@ class ApiCall {
     }*/
   }
 
-
-
   Future<dynamic> checkCustomerId(
-      String customerId,
-      ) async {
+    String customerId,
+  ) async {
     try {
       var params = {
         "CustomerID": customerId,
@@ -60,18 +56,17 @@ class ApiCall {
 
       log('${_dio.options.baseUrl} $CHECK_CUSTOMER_URL ${jsonEncode(params)}');
       final response =
-      await _dio.post(CHECK_CUSTOMER_URL, queryParameters: params);
+          await _dio.post(CHECK_CUSTOMER_URL, queryParameters: params);
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-        
         return null;
       } else {
         return response.data;
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -91,14 +86,13 @@ class ApiCall {
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-      
         return null;
       } else {
         return MobileLoginResponse.fromJson(response.data);
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -107,18 +101,17 @@ class ApiCall {
     try {
       log('${_dio.options.baseUrl} $UPDATE_DEVICE_URL ${jsonEncode(params)}');
       final response =
-      await _dio.post(UPDATE_DEVICE_URL, data: jsonEncode(params));
+          await _dio.post(UPDATE_DEVICE_URL, data: jsonEncode(params));
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-      
         return null;
       } else {
         return response.data;
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -129,18 +122,17 @@ class ApiCall {
 
       log('${_dio.options.baseUrl} $FORGET_MPIN_URL ${jsonEncode(params)}');
       final response =
-      await _dio.post(FORGET_MPIN_URL, queryParameters: params);
+          await _dio.post(FORGET_MPIN_URL, queryParameters: params);
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-      
         return null;
       } else {
         return response.data;
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -159,14 +151,13 @@ class ApiCall {
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-        
         return null;
       } else {
         return response.data;
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -182,14 +173,13 @@ class ApiCall {
       log('response ${response.requestOptions.path} ${response.statusCode}');
 
       if ((response.statusCode ?? -1) >= 205) {
-        
         return null;
       } else {
         return ApplicationSettingResponse.fromJson(response.data);
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -208,14 +198,13 @@ class ApiCall {
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-        
         return null;
       } else {
         return GeoHistoryResponse.fromJson(response.data);
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -229,18 +218,17 @@ class ApiCall {
 
       log('${_dio.options.baseUrl} $GET_NEAR_COMPANY_URL ${jsonEncode(params)}');
       final response =
-      await _dio.post(GET_NEAR_COMPANY_URL, queryParameters: params);
+          await _dio.post(GET_NEAR_COMPANY_URL, queryParameters: params);
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-        
         return null;
       } else {
         return NearCompanyResponse.fromJson(response.data);
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -249,18 +237,17 @@ class ApiCall {
     try {
       log('${_dio.options.baseUrl} $UPDATE_STATUS_URL ${jsonEncode(params)}');
       final response =
-      await _dio.post(UPDATE_STATUS_URL, data: jsonEncode(params));
+          await _dio.post(UPDATE_STATUS_URL, data: jsonEncode(params));
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-        
         return null;
       } else {
         return response.data;
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -276,14 +263,13 @@ class ApiCall {
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-        
         return null;
       } else {
         return MenuResponse.fromJson(response.data);
       }
     } catch (e) {
       log(e.toString());
-      
+
       return null;
     }
   }
@@ -303,11 +289,10 @@ class ApiCall {
 
     log('${_dio.options.baseUrl} $INSERT_LEAVE_URL ${jsonEncode(params)}');
     final response =
-    await _dio.post(INSERT_LEAVE_URL, data: jsonEncode(params));
+        await _dio.post(INSERT_LEAVE_URL, data: jsonEncode(params));
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -327,11 +312,10 @@ class ApiCall {
 
       log('${_dio.options.baseUrl} $LEAVE_LIST_URL ${jsonEncode(params)}');
       final response =
-      await _dio.post(LEAVE_LIST_URL, data: jsonEncode(params));
+          await _dio.post(LEAVE_LIST_URL, data: jsonEncode(params));
       log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
       if ((response.statusCode ?? -1) >= 205) {
-        
         return null;
       } else {
         return LeaveListResponse.fromJson(response.data);
@@ -354,7 +338,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -378,7 +361,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -400,7 +382,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return OtListResponse.fromJson(response.data);
@@ -419,7 +400,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -430,11 +410,10 @@ class ApiCall {
   Future<dynamic> insertOutstation(var params) async {
     log('${_dio.options.baseUrl} $INSERT_OUTSTATION_URL ${jsonEncode(params)}');
     final response =
-    await _dio.post(INSERT_OUTSTATION_URL, data: jsonEncode(params));
+        await _dio.post(INSERT_OUTSTATION_URL, data: jsonEncode(params));
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -453,11 +432,10 @@ class ApiCall {
 
     log('${_dio.options.baseUrl} $OUTSTATION_LIST_URL ${jsonEncode(params)}');
     final response =
-    await _dio.post(OUTSTATION_LIST_URL, data: jsonEncode(params));
+        await _dio.post(OUTSTATION_LIST_URL, data: jsonEncode(params));
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return OutstationListResponse.fromJson(response.data);
@@ -475,11 +453,10 @@ class ApiCall {
 
     log('${_dio.options.baseUrl} $UPDATE_OUTSTATION_URL ${jsonEncode(params)}');
     final response =
-    await _dio.post(UPDATE_OUTSTATION_URL, queryParameters: params);
+        await _dio.post(UPDATE_OUTSTATION_URL, queryParameters: params);
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -493,11 +470,10 @@ class ApiCall {
 
     log('${_dio.options.baseUrl} $DROPDOWN_OUTSTATION_URL ${jsonEncode(params)}');
     final response =
-    await _dio.post(DROPDOWN_OUTSTATION_URL, queryParameters: params);
+        await _dio.post(DROPDOWN_OUTSTATION_URL, queryParameters: params);
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -514,7 +490,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return NotificationResponse.fromJson(response.data);
@@ -527,7 +502,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -541,7 +515,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -560,7 +533,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return DashboardResponse.fromJson(response.data);
@@ -580,7 +552,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return EmpLatLngResponse.fromJson(response.data);
@@ -589,8 +560,8 @@ class ApiCall {
 
   //support desk
   Future<CustomerListResponse?> getCustomerList(
-      String customerId,
-      ) async {
+    String customerId,
+  ) async {
     Map<String, String> params = {
       "CustomerID": customerId,
     };
@@ -600,7 +571,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return CustomerListResponse.fromJson(response.data);
@@ -616,7 +586,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return FeedbackResponse.fromJson(response.data);
@@ -624,8 +593,8 @@ class ApiCall {
   }
 
   Future<dynamic> feedbackTicket(
-      var params,
-      ) async {
+    var params,
+  ) async {
     log('${_dio.options.baseUrl} $FEEDBACK_TICKET_URL ${jsonEncode(params)}');
     final response = await _dio.post(
       FEEDBACK_TICKET_URL,
@@ -634,7 +603,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -651,7 +619,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return AttritionListResponse.fromJson(response.data);
@@ -664,12 +631,11 @@ class ApiCall {
 
     log('${_dio.options.baseUrl} $ATTRITION_REPORT_URL');
     final response =
-    await _dio.post(ATTRITION_REPORT_URL, queryParameters: params);
+        await _dio.post(ATTRITION_REPORT_URL, queryParameters: params);
 
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return StaffReportResponse.fromJson(response.data);
@@ -677,11 +643,11 @@ class ApiCall {
   }
 
   Future<dynamic> updateCustomer(
-      String cid,
-      String lat,
-      String lng,
-      String userid,
-      ) async {
+    String cid,
+    String lat,
+    String lng,
+    String userid,
+  ) async {
     var params = {
       "CustomerID": cid,
       "Latitude": lat,
@@ -691,12 +657,11 @@ class ApiCall {
 
     log('${_dio.options.baseUrl} $UPDATE_CUSTOMER_URL');
     final response =
-    await _dio.post(UPDATE_CUSTOMER_URL, queryParameters: params);
+        await _dio.post(UPDATE_CUSTOMER_URL, queryParameters: params);
 
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -704,11 +669,11 @@ class ApiCall {
   }
 
   Future<dynamic> changeCompanyActive(
-      String cid,
-      String lat,
-      String lng,
-      String userid,
-      ) async {
+    String cid,
+    String lat,
+    String lng,
+    String userid,
+  ) async {
     var params = {
       "CustomerID": cid,
       "Latitude": lat,
@@ -718,12 +683,11 @@ class ApiCall {
 
     log('${_dio.options.baseUrl} $UPDATE_CUSTOMER_URL');
     final response =
-    await _dio.post(UPDATE_CUSTOMER_URL, queryParameters: params);
+        await _dio.post(UPDATE_CUSTOMER_URL, queryParameters: params);
 
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -738,7 +702,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -752,7 +715,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -767,7 +729,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -782,7 +743,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -797,7 +757,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return ClientListResponse.fromJson(response.data);
@@ -812,7 +771,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -846,7 +804,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -862,7 +819,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -878,7 +834,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -893,7 +848,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return CollectionListResponse.fromJson(response.data);
@@ -906,7 +860,6 @@ class ApiCall {
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
-      
       return null;
     } else {
       return response.data;
@@ -927,7 +880,7 @@ class ApiCall {
 
   Future<UserListResponse?> getUsersList() async {
     final response =
-    await _dio.get(GET_EMPLOYEE_LIST, queryParameters: {"EmployeeID": 0});
+        await _dio.get(GET_EMPLOYEE_LIST, queryParameters: {"EmployeeID": 0});
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) <= 205) {
@@ -963,11 +916,9 @@ class ApiCall {
   }
 
   Future<dynamic> createEmployee(var params) async {
-
-    final response=await _dio.post(INSERT_UPDATE_EMPLOYEE,data: params);
+    final response = await _dio.post(INSERT_UPDATE_EMPLOYEE, data: params);
 
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
-
 
     if ((response.statusCode ?? -1) <= 205) {
       return response.data;
@@ -977,10 +928,8 @@ class ApiCall {
   }
 
   Future<UserRemarkResponse?> getRemarksList(int userId, String date) async {
-    final response = await _dio.get(GET_REMARK_URL, queryParameters: {
-      "UserID":userId,
-      "RemarksDate":date
-    });
+    final response = await _dio.get(GET_REMARK_URL,
+        queryParameters: {"UserID": userId, "RemarksDate": date});
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) <= 205) {
@@ -992,11 +941,9 @@ class ApiCall {
   }
 
   Future<dynamic> submitRemarks(var data) async {
-
-    final response=await _dio.post(SUBMIT_REMARK_URL,data: data);
+    final response = await _dio.post(SUBMIT_REMARK_URL, data: data);
 
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
-
 
     if ((response.statusCode ?? -1) <= 205) {
       return response.data;
@@ -1005,6 +952,59 @@ class ApiCall {
     }
   }
 
+  Future<dynamic> getVisitingReport(
+      String userId, String fDate, String tDate) async {
+    Map<String, String> params = {
+      "UserID": userId,
+      "FromDate": fDate,
+      "ToDate": tDate,
+    };
+
+    log('${_dio.options.baseUrl} $GET_VISITING_REPORT_URL ${jsonEncode(params)}');
+    final response =
+        await _dio.get(GET_VISITING_REPORT_URL, queryParameters: params);
+    log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
+
+    if ((response.statusCode ?? -1) >= 205) {
+      return null;
+    } else {
+      return response.data;
+    }
+  }
 
 
+  Future<dynamic> submitVisitingReport(var body, List<String> paths) async {
+    log('${_dio.options.baseUrl} $SUBMIT_VISITING_REPORT_URL ${jsonEncode(body)}');
+
+    List<MultipartFile> files = [];
+    List<MultipartFile> imgFiles = [];
+    for (var element in paths) {
+      if (element.isNotEmpty) {
+        files.add(await MultipartFile.fromFile(
+          element,
+        ));
+      }
+    }
+
+    //debugPrint('${files.length} ${files.first.toString()}');
+
+    var formData = FormData.fromMap({
+      'VisitingDetails ': jsonEncode(body),
+      'UploadImg' : imgFiles,
+      'UploadAudio ': files,
+    });
+    debugPrint("Multipart file : $formData");
+
+    final response = await _dio.post(
+      SUBMIT_VISITING_REPORT_URL,
+      data: formData,
+    );
+    log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
+
+    if ((response.statusCode ?? -1) >= 205) {
+      return null;
+    } else {
+      return response.data;
+    }
+  }
 }

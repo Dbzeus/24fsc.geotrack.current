@@ -130,6 +130,8 @@ class MobileLoginController extends GetxController {
         if (response.rtnStatus ?? false) {
           showToastMsg(response.rtnMessage);
           goToHome(response.rtnData);
+        }else {
+          showToastMsg('${response.rtnMessage}');
         } /*else {
           if (response.id == 1) {
             //show popup

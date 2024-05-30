@@ -16,7 +16,7 @@ class DashboardController extends GetxController {
   RxString date = "".obs;
   RxInt daysInMonth = 0.obs, isSelectedDate = (-1).obs;
   RxList<DateTime> days = <DateTime>[].obs;
-  List daysofWeek = [];
+
 
   RxList list = RxList();
   Rx<DashboardResponseData?> data = Rx(null);

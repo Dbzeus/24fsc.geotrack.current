@@ -4,11 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:geotrack24fsc/screens/home/home_controller.dart';
-import 'package:geotrack24fsc/screens/home/home_screen.dart';
 import 'package:geotrack24fsc/utils/session.dart';
-import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
@@ -44,8 +40,6 @@ void onStart(ServiceInstance serviceInstance) {
     serviceInstance.stopSelf();
   });
 
-
-
   Timer.periodic(const Duration(minutes: 1), (timer) async {
     if (serviceInstance is AndroidServiceInstance) {
       if (await serviceInstance.isForegroundService()) {
@@ -59,57 +53,61 @@ void onStart(ServiceInstance serviceInstance) {
         ));*/
 
         serviceInstance.setForegroundNotificationInfo(
-            title: "24Fsc", content: "App is running....123");
+            title: "24Fsc", content: "App is running........");
 
         //backgroundLocationService();
         //var response = await ApiCall().getDepartments(22);
       }
     }
-    backgroundLocationService();
+
+    DateFormat timeFormat = DateFormat("HH:mm:ss");
+
+    DateTime currentTime =
+        timeFormat.parse(DateTime.now().toString().split(" ")[1].split(".")[0]);
+    DateTime logoutTime = timeFormat.parse("20:00:00");
+
+    debugPrint("ABCD1");
+
+    if (currentTime.isAfter(logoutTime)) {
+      debugPrint("ABCD2");
+      final box = GetStorage();
+      debugPrint(
+          "ABCD Session:${box.read(Session.isRunnerCancelling).toString()}");
+      if (box.read(Session.isRunnerCancelling) != null) {
+        if (box.read(Session.isRunnerCancelling) == true) {
+          debugPrint("ABCD3");
+          var res = await backgroundLocationService("4");
+          if (res == true) {
+            debugPrint("ABCD4");
+            box.write(Session.isRunnerCancelling, false);
+            serviceInstance.stopSelf();
+          }
+        }
+      } else {
+        debugPrint("ABCD Foreground");
+        serviceInstance.invoke("setAsForeground");
+      }
+
+
+    }else{
+      debugPrint("ABCD5");
+      backgroundLocationService("3");
+
+    }
     serviceInstance.invoke('update');
   });
 }
 
-backgroundLocationService() async {
+backgroundLocationService(String status) async {
   var position = await getCurrentLocationForBackgroundFetch();
-  DateFormat timeFormat = DateFormat("HH:mm:ss");
-
-  DateTime currentTime =
-      timeFormat.parse(DateTime.now().toString().split(" ")[1].split(".")[0]);
-  DateTime logoutTime = timeFormat.parse("14:50:00");
-
   final box = GetStorage();
-  if (currentTime.isAfter(logoutTime)) {
-    try {
-      var params = {
-        "UserID": box.read(Session.userid).toString(),
-        "StatusID": '4', // auto logout
-        "Latitude": '${position!.latitude}',
-        "Longitude": '${position.longitude}',
-        "MVersion": box.read(Session.version).toString() ?? "",
-        "Battery": "",
-        "DeviceID": box.read(Session.deviceID).toString() ?? "",
-        "ClientID": 0,
-        "SessionID": 0,
-        "StatusAddress": "demo",
-        "Distance": 0,
-        "SelfiyImage": "",
-        "isOnLocation": true,
-      };
-      var response = await ApiCall().updateStatus(params);
-      if (response != null) {
-        if (response['RtnStatus']) {
-          debugPrint("12345");
-
-        }
-      }
-    } catch (e) {
-      debugPrint("CATCH ERROR: ${e.toString()}");
-    }
-  } else {
+  if (box.read(Session.userid) != null ||
+      box.read(Session.version) != null ||
+      box.read(Session.deviceID) != null) {
+    debugPrint("ABCD Status id: ${status.toString()}");
     var params = {
       "UserID": box.read(Session.userid).toString(),
-      "StatusID": '3', // get status
+      "StatusID": status,
       "Latitude": '${position!.latitude}',
       "Longitude": '${position.longitude}',
       "MVersion": box.read(Session.version).toString() ?? "",
@@ -125,9 +123,13 @@ backgroundLocationService() async {
     var response = await ApiCall().updateStatus(params);
     if (response != null) {
       if (response['RtnStatus']) {
-        // final con = Get.find<HomeController>() ;
-        // con.getTimeline();
+        debugPrint("ABCDEFGHIJKL");
+        return true;
       }
     }
+  } else {
+    debugPrint("1234567890");
+    backgroundLocationService(status);
+    return false;
   }
 }

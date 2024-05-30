@@ -1,25 +1,52 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:geotrack24fsc/utils/session.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:mat_month_picker_dialog/mat_month_picker_dialog.dart';
+
+import '../../../apis/api_call.dart';
+import '../../../helpers/colors.dart';
+import '../../../utils/constants.dart';
 
 class VisitingReportController extends GetxController {
-  Rx<String> currentDate = "".obs;
   DateTime now = DateTime.now();
-  RxInt daysInMonth = 0.obs;
-  List<DateTime> days = [];
+  RxInt daysInMonth = 0.obs, isSelectedDate = (-1).obs;
+  RxList<DateTime> days = <DateTime>[].obs;
+  RxBool isLoading = false.obs;
+  final box = GetStorage();
+  RxString selectedMonth = ''.obs;
+  DateFormat showFormat = DateFormat('MMM yyyy');
+  DateFormat dateFormat = DateFormat('dd-MM-yyyy');
+  DateTime selected = DateTime.now();
+  int userId = -1;
 
+  RxList data = RxList();
 
+  final player = AudioPlayer();
+  RxString audio = "".obs;
+
+  RxBool isPlay = false.obs;
+
+  late Duration audioDuration;
+  late Duration stopDuration;
+
+  RxDouble sliderValue = 0.0.obs;
+
+  RxBool isPlayFromCard = false.obs;
 
   @override
   void onInit() async {
     super.onInit();
-    currentDate(DateFormat('MMM dd yyyy').format(DateTime.now()));
-
+    selectedMonth(showFormat.format(DateTime.now()));
+    isSelectedDate(int.parse(DateTime.now().day.toString()));
     daysInMonth.value = DateUtils.getDaysInMonth(now.year, now.month);
-    days = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
-    debugPrint("days: ${days.toString()}");
-
-
+    days.value = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
+    userId = box.read(Session.userid) ?? -1;
+    getVisitingReport(date: DateTime.now().toString().split(" ")[0]);
   }
 
   List<DateTime> getAllDaysInMonth(int year, int month) {
@@ -40,20 +67,151 @@ class VisitingReportController extends GetxController {
     return days;
   }
 
-  changeDate() async {
-    try {
-      DateTime dt = DateFormat("MMM dd yyyy").parse(currentDate.value);
-      final DateTime? pickedDate = await showDatePicker(
-          context: Get.context!,
-          initialDate: dt,
-          firstDate: DateTime.now().subtract(const Duration(days: 45)),
-          lastDate: DateTime.now());
+  String getDayOfWeek(DateTime date) {
+    const List<String> daysOfWeek = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
 
-      if (pickedDate != null) {
-        currentDate(DateFormat("MMM dd yyyy").format(pickedDate));
+    return daysOfWeek[date.weekday - 1];
+  }
+
+  changeMonth() async {
+    try {
+      await showMonthPicker(
+        context: Get.context!,
+        firstDate: DateTime.now().subtract(const Duration(days: 60)),
+        lastDate: DateTime.now(),
+        initialDate: selected,
+      ).then((date) {
+        if (data != null) {
+          selected = date!;
+          debugPrint(selected.toString());
+          selectedMonth(showFormat.format(date));
+          isSelectedDate(int.parse(selected.day.toString()));
+          daysInMonth.value =
+              DateUtils.getDaysInMonth(selected.year, selected.month);
+          days.value = getAllDaysInMonth(selected.year, selected.month);
+          getVisitingReport(date: selected.toString().split(" ")[0]);
+        }
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  playAudio(String audio, {bool fromCard = false}) async {
+    try {
+      debugPrint("isPlay 123${isPlay.value.toString()}");
+      Duration? res = await player.setUrl(audio);
+      if (res != null) {
+        isPlay(true);
+        debugPrint("isPlay abcd${isPlay.value.toString()}");
+        await player.play();
+        player.playerStateStream.listen((event) {
+          if (event.processingState == ProcessingState.completed) {
+            isPlay(false);
+          }
+        });
       }
     } catch (e) {
-      //ignored
+      debugPrint("Error loading audio source: ${e.toString()}");
+      Get.back();
+      showToastMsg("Audio error");
     }
+  }
+
+  stopAudio({bool fromCard = false}) async {
+    try {
+      await player.stop();
+      isPlay(false);
+    } catch (e) {
+      log("Error stop in audio source: $e");
+    }
+  }
+
+  getVisitingReport({String date = ""}) async {
+    if (await isNetConnected()) {
+      isLoading(true);
+      try {
+        var response = await ApiCall()
+            .getVisitingReport(box.read(Session.userid).toString(), date, date);
+        if (response != null) {
+          if (response["RtnStatus"]) {
+            data(response["RtnData"]["Details"]);
+          } else {
+            showToastMsg(response["RtnMessage"]);
+            data.value = [];
+          }
+        }
+      } catch (e) {
+        debugPrint("catch error: ${e.toString()}");
+      }
+    } else {
+      showToastMsg("Check your internet connection");
+    }
+    isLoading(false);
+  }
+
+  audioAlertDialog(String audio) {
+    return showDialog(
+        context: Get.context!,
+        builder: (BuildContext) {
+          return AlertDialog(
+            backgroundColor: whiteColor,
+            content: SizedBox(
+              height: 20,
+              child: Center(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if (audio.isNotEmpty) {
+                          isPlay.value ? stopAudio() : playAudio(audio);
+                        }
+                      },
+                      child: Icon(
+                        Icons.play_circle,
+                        color: secondaryColor,
+                        size: 30,
+                      ),
+                    ),
+                    Slider(
+                        value: sliderValue.value,
+                        onChanged: (value) {
+                          // final newPosition = value * controller.audioDuration.inMilliseconds;
+                          // controller.player.seek(Duration(milliseconds: newPosition.round()));
+                        },
+                        min: 0.0,
+                        max: 1.0),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+
+    /*return Get.defaultDialog(
+      backgroundColor: whiteColor,
+      title: "",
+      middleText: "",
+      radius: 14,
+      barrierDismissible: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      actions: [
+        Icon(
+          Icons.play_circle,
+          color: secondaryColor,
+          size: 30,
+        ),
+      ]
+    );*/
   }
 }

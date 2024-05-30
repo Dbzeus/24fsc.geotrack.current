@@ -5,6 +5,7 @@ import 'package:geotrack24fsc/screens/reports/visiting_report/visiting_report_co
 import 'package:get/get.dart';
 
 import '../../../helpers/colors.dart';
+import '../../../utils/constants.dart';
 
 class VisitingReportScreen extends GetView<VisitingReportController> {
   VisitingReportScreen({super.key});
@@ -15,22 +16,28 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Row(
+        child: Column(
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 16),
+              child: Row(
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: blackColor,
-                      shape: BoxShape.circle,
-                    ),
-                    child: SvgPicture.asset(
-                      "assets/icons/back.svg",
-                      fit: BoxFit.scaleDown,
+                  GestureDetector(
+                    onTap: () {
+                      Get.back();
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: const BoxDecoration(
+                        color: blackColor,
+                        shape: BoxShape.circle,
+                      ),
+                      child: SvgPicture.asset(
+                        "assets/icons/back.svg",
+                        fit: BoxFit.scaleDown,
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -46,111 +53,191 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 16,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    "Visiting Report",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: blackColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Obx(() => InkWell(
-                        onTap: () => controller.changeDate(),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.calendar_month,
-                              color: primaryColor,
-                              size: 14,
+            ),
+            Obx(
+              () => controller.isLoading.value
+                  ? SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.8,
+                      child: const Center(child: CircularProgressIndicator()))
+                  : Expanded(
+                    child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
                             ),
-                            const SizedBox(
-                              width: 4,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Visiting Report",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: blackColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Obx(() => InkWell(
+                                      onTap: () => controller.changeMonth(),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.calendar_month,
+                                            color: primaryColor,
+                                            size: 14,
+                                          ),
+                                          const SizedBox(
+                                            width: 4,
+                                          ),
+                                          Text(controller.selectedMonth.value,
+                                              style: const TextStyle(
+                                                  color: primaryColor,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                    )),
+                              ],
                             ),
-                            Text('${controller.currentDate}',
-                                style: const TextStyle(
-                                    color: primaryColor,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      )),
-                ],
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(),
-                child: SizedBox(
-                  height: 100,
-                  child: Row(
-                    children:
-                        List.generate(controller.daysInMonth.value, (index) {
-                      return Container(
-                        height: 80,
-                        width: 60,
-                        margin: const EdgeInsets.only(left: 8),
-                        decoration: BoxDecoration(
-                            color: fillColor,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              const BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 2,
-                                  offset: Offset(3, 2)),
-                              const BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 4,
-                                  offset: Offset(3, 5)),
-                            ]),
-                        child: const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Fri",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: blackColor,
-                                fontWeight: FontWeight.bold,
+                          ),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            physics: const BouncingScrollPhysics(),
+                            controller: ScrollController(
+                              initialScrollOffset:
+                                  controller.isSelectedDate.value < 10
+                                      ? controller.isSelectedDate.value == 1
+                                          ? controller.isSelectedDate.value * 1
+                                          : controller.isSelectedDate.value * 30
+                                      : controller.isSelectedDate.value * 60,
+                              keepScrollOffset: true,
+                            ),
+                            child: SizedBox(
+                              height: 130,
+                              child: Obx(
+                                () => Row(
+                                  children: List.generate(controller.days.length,
+                                      (index) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        debugPrint(
+                                            "position: ${controller.isSelectedDate.value * 60}");
+                                        if (controller.days[index]
+                                            .isBefore(DateTime.now())) {
+                                          controller.getVisitingReport(
+                                              date:
+                                                  "${controller.days[index].month}/${controller.days[index].day}/${controller.days[index].year}");
+                                          controller.isSelectedDate(
+                                              controller.days[index].day);
+                                        } else {
+                                          showToastMsg(
+                                              "Please Don't select  Upcoming dates");
+                                        }
+                                      },
+                                      child: Container(
+                                        height: (controller.isSelectedDate.value -
+                                                    1) ==
+                                                index
+                                            ? 100
+                                            : 80,
+                                        width: (controller.isSelectedDate.value -
+                                                    1) ==
+                                                index
+                                            ? 70
+                                            : 60,
+                                        margin: const EdgeInsets.only(left: 8),
+                                        decoration: BoxDecoration(
+                                            color:
+                                                (controller.isSelectedDate.value -
+                                                            1) ==
+                                                        index
+                                                    ? secondaryColor
+                                                    : fillColor,
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            border: Border.all(
+                                              color: borderColor,
+                                            )),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              controller
+                                                  .getDayOfWeek(DateTime(
+                                                    controller.days[index].year,
+                                                    controller.days[index].month,
+                                                    controller.days[index].day,
+                                                  ))
+                                                  .substring(0, 3),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: (controller.isSelectedDate
+                                                                .value -
+                                                            1) ==
+                                                        index
+                                                    ? whiteColor
+                                                    : blackColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 8,
+                                            ),
+                                            Text(
+                                              controller.days[index].day
+                                                  .toString(),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: (controller.isSelectedDate
+                                                                .value -
+                                                            1) ==
+                                                        index
+                                                    ? whiteColor
+                                                    : blackColor,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }),
+                                ),
                               ),
                             ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            Text(
-                              "13",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: blackColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
+                          ),
+                          Obx(
+                            () => controller.data.isEmpty
+                                ? const SizedBox(
+                              height: 300,
+                                  child: Center(
+                                    child: Text(
+                                    "No records ",
+                                    style: TextStyle(
+                                      color: secondaryColor,
+                                      fontWeight: FontWeight.bold
+                                    ),
+                                                                    ),
+                                  ),
+                                )
+                                : Expanded(
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      scrollDirection: Axis.vertical,
+                                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                                      physics: const BouncingScrollPhysics(),
+                                      itemCount: controller.data.length,
+                                      itemBuilder: (_, index) {
+                                        return _buildList(controller.data[index]);
+                                      }),
+                                ),
+                          ),
+                        ],
+                      ),
                   ),
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: 12,
-                    itemBuilder: (_, index) {
-                      return _buildList();
-                    }),
-              )
-            ],
-          ),
+            )
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -167,7 +254,7 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
     );
   }
 
-  _buildList() {
+  _buildList(data) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -175,95 +262,123 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
       decoration: BoxDecoration(
           color: whiteColor,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
-            BoxShadow(
-                color: Colors.black12, blurRadius: 2, offset: Offset(3, 2)),
-            BoxShadow(
-                color: Colors.black12, blurRadius: 4, offset: Offset(3, 5)),
-          ]),
-      child: const Column(
+          boxShadow: boxShadow),
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "24FSC",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: primaryColor,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  data["ClientName"].toString(),
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              Icon(
-                Icons.play_circle,
-                color: secondaryColor,
-                size: 30,
+              const SizedBox(
+                width: 20,
+              ),
+              GestureDetector(
+                onTap: () {
+                  controller.audioAlertDialog(
+                    data["UploadAudio"].toString(),
+                  );
+                },
+                child: const Icon(
+                  Icons.play_circle,
+                  color: secondaryColor,
+                  size: 30,
+                ),
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.person,
-                    color: secondaryColor,
-                    size: 14,
-                  ),
-                  SizedBox(
-                    width: 4,
-                  ),
-                  Text(
-                    "Dinesh",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: blackColor,
+              Expanded(
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.person,
+                      color: secondaryColor,
+                      size: 14,
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    Expanded(
+                      child: Text(
+                        data["ContactPersonName"].toString(),
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: blackColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                width: 20,
               ),
               Text(
-                "10-05-2024",
-                style: TextStyle(
+                controller.dateFormat
+                    .format(DateTime.parse(data["VisitingDate"].split("T")[0])),
+                style: const TextStyle(
                   fontSize: 12,
                   color: blackColor,
                 ),
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.message,
-                    color: secondaryColor,
-                    size: 14,
-                  ),
-                  SizedBox(
-                    width: 4,
-                  ),
-                  Text(
-                    "general visit",
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: blackColor,
+              Expanded(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.message,
+                      color: secondaryColor,
+                      size: 14,
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      width: 4,
+                    ),
+                    Expanded(
+                      child: Text(
+                        data["Remarks"].toString(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: blackColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                width: 20,
               ),
               Text(
-                "09.00 am - 5.00 pm",
-                style: TextStyle(
+                data["VisitingTime"].toString(),
+                style: const TextStyle(
                   fontSize: 12,
                   color: blackColor,
                 ),

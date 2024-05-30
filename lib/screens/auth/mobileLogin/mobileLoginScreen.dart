@@ -7,6 +7,7 @@ import 'package:geotrack24fsc/routes/app_routes.dart';
 import 'package:geotrack24fsc/screens/auth/mobileLogin/mobileLogincontroller.dart';
 import 'package:geotrack24fsc/widgets/custom_button.dart';
 import 'package:get/get.dart';
+import 'package:record/record.dart';
 
 import '../../../utils/location_permission.dart';
 import '../../../utils/notification.dart';
@@ -118,6 +119,8 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                       onTap: () async {
 
                         await notificationPermission();
+                        var res=await AudioRecorder().hasPermission();
+
                         controller.login();
                        /* var permission = await checkLocationPermission1();
                         if (permission == true) {

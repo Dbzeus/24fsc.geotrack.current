@@ -93,6 +93,11 @@ class HomeController extends GetxController {
     getTimeline();
   }
 
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    debugPrint("STATE: ${state.toString()}");
+
+  }
+
   getTimeline() async {
     if (await isNetConnected()) {
       isLoading(true);
@@ -116,6 +121,8 @@ class HomeController extends GetxController {
       }
 
       getSettings();
+    }else{
+      showToastMsg("Check your internet connection");
     }
   }
 
@@ -220,9 +227,9 @@ class HomeController extends GetxController {
       }
       isCanceled(true); // setting true, because its always true for slider button. if position gives null then only,change to false
       if (position == null) {
-        debugPrint("isbeforeCanceled: ${isCanceled.toString()}");
+
         isCanceled(false);
-        debugPrint("isCanceled: ${isCanceled.toString()}");
+
         return;
       };
       showLoader(title: 'Update Status');
@@ -262,14 +269,16 @@ class HomeController extends GetxController {
                 FlutterBackgroundService().invoke('stopService');
                 if (await FlutterBackgroundService().isRunning()) {
                   FlutterBackgroundService().invoke('setAsForeground');
+                  _box.write(Session.isRunnerCancelling,true);
                 }
               }
               //FlutterBackgroundService().invoke('setAsBackground');
             }
-          } else if (_box.read(Session.isAutoFetch) == 2) {
+          } else if (_box.read(Session.isAutoFetch) == 2 ) {
             debugPrint("AUTO FETCH in stop:${_box.read(Session.isAutoFetch)}");
             if (await FlutterBackgroundService().isRunning()) {
               FlutterBackgroundService().invoke('stopService');
+              _box.write(Session.isRunnerCancelling,false);
             }
           }
         } else {

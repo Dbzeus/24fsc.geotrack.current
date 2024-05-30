@@ -13,6 +13,7 @@ class Session {
   static const String isAppLogin = "isAppLogin";
   static const String isMobileLogin = "isMobileLogin";
   static const String isAutoFetch = "isAutoFetch";
+  static const String isRunnerCancelling = "isRunnerCancelling";
   static const String isCustomer = "isCustomer";
   static const String isMarketing = "isMarketing";
   static const String isILT = "isILT";
