@@ -6,7 +6,6 @@ import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:geotrack24fsc/routes/app_pages.dart';
 import 'package:geotrack24fsc/routes/app_routes.dart';
 
-import 'package:geotrack24fsc/utils/services.dart';
 import 'package:geotrack24fsc/utils/session.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -48,7 +47,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: alice.getNavigatorKey(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
+          colorScheme: ColorScheme.fromSeed(
           seedColor: primaryColor,
         ),
         useMaterial3: true,

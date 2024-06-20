@@ -60,7 +60,7 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
                       height: MediaQuery.of(context).size.height * 0.8,
                       child: const Center(child: CircularProgressIndicator()))
                   : Expanded(
-                    child: Column(
+                      child: Column(
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
@@ -116,8 +116,8 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
                               height: 130,
                               child: Obx(
                                 () => Row(
-                                  children: List.generate(controller.days.length,
-                                      (index) {
+                                  children: List.generate(
+                                      controller.days.length, (index) {
                                     return GestureDetector(
                                       onTap: () {
                                         debugPrint(
@@ -135,24 +135,26 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
                                         }
                                       },
                                       child: Container(
-                                        height: (controller.isSelectedDate.value -
-                                                    1) ==
-                                                index
-                                            ? 100
-                                            : 80,
-                                        width: (controller.isSelectedDate.value -
-                                                    1) ==
-                                                index
-                                            ? 70
-                                            : 60,
+                                        height:
+                                            (controller.isSelectedDate.value -
+                                                        1) ==
+                                                    index
+                                                ? 100
+                                                : 80,
+                                        width:
+                                            (controller.isSelectedDate.value -
+                                                        1) ==
+                                                    index
+                                                ? 70
+                                                : 60,
                                         margin: const EdgeInsets.only(left: 8),
                                         decoration: BoxDecoration(
-                                            color:
-                                                (controller.isSelectedDate.value -
-                                                            1) ==
-                                                        index
-                                                    ? secondaryColor
-                                                    : fillColor,
+                                            color: (controller.isSelectedDate
+                                                            .value -
+                                                        1) ==
+                                                    index
+                                                ? secondaryColor
+                                                : fillColor,
                                             borderRadius:
                                                 BorderRadius.circular(16),
                                             border: Border.all(
@@ -166,13 +168,15 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
                                               controller
                                                   .getDayOfWeek(DateTime(
                                                     controller.days[index].year,
-                                                    controller.days[index].month,
+                                                    controller
+                                                        .days[index].month,
                                                     controller.days[index].day,
                                                   ))
                                                   .substring(0, 3),
                                               style: TextStyle(
                                                 fontSize: 14,
-                                                color: (controller.isSelectedDate
+                                                color: (controller
+                                                                .isSelectedDate
                                                                 .value -
                                                             1) ==
                                                         index
@@ -189,7 +193,8 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
                                                   .toString(),
                                               style: TextStyle(
                                                 fontSize: 14,
-                                                color: (controller.isSelectedDate
+                                                color: (controller
+                                                                .isSelectedDate
                                                                 .value -
                                                             1) ==
                                                         index
@@ -210,39 +215,44 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
                           Obx(
                             () => controller.data.isEmpty
                                 ? const SizedBox(
-                              height: 300,
-                                  child: Center(
-                                    child: Text(
-                                    "No records ",
-                                    style: TextStyle(
-                                      color: secondaryColor,
-                                      fontWeight: FontWeight.bold
+                                    height: 300,
+                                    child: Center(
+                                      child: Text(
+                                        "No records ",
+                                        style: TextStyle(
+                                            color: secondaryColor,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                     ),
-                                                                    ),
-                                  ),
-                                )
+                                  )
                                 : Expanded(
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.vertical,
-                                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                                      physics: const BouncingScrollPhysics(),
-                                      itemCount: controller.data.length,
-                                      itemBuilder: (_, index) {
-                                        return _buildList(controller.data[index]);
-                                      }),
-                                ),
+                                    child: ListView.builder(
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12),
+                                        physics: const BouncingScrollPhysics(),
+                                        itemCount: controller.data.length,
+                                        itemBuilder: (_, index) {
+                                          return _buildList(
+                                              controller.data[index]);
+                                        }),
+                                  ),
                           ),
                         ],
                       ),
-                  ),
+                    ),
             )
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Get.toNamed(Routes.createReport);
+        onPressed: () async {
+          var res = await Get.toNamed(Routes.createReport);
+          if (res != null && res == true) {
+            controller.getVisitingReport(
+                date: DateTime.now().toString().split(" ")[0]);
+          }
         },
         backgroundColor: blackColor,
         child: const Icon(
@@ -283,18 +293,27 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
               const SizedBox(
                 width: 20,
               ),
-              GestureDetector(
-                onTap: () {
-                  controller.audioAlertDialog(
-                    data["UploadAudio"].toString(),
-                  );
-                },
-                child: const Icon(
-                  Icons.play_circle,
-                  color: secondaryColor,
-                  size: 30,
-                ),
-              ),
+              data["UploadAudio"].toString().isNotEmpty
+                  ? GestureDetector(
+                      onTap: () {
+                        controller.sliderValue(0.0);
+                        if (data["UploadAudio"].toString().isNotEmpty) {
+                          String audioURL = data["UploadAudio"]
+                              .toString()
+                              .split(",")[0]
+                              .trim();
+                          controller.audioAlertDialog(audioURL);
+                        } else {
+                          showToastMsg("No Audio Found");
+                        }
+                      },
+                      child: const Icon(
+                        Icons.play_circle,
+                        color: secondaryColor,
+                        size: 30,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ],
           ),
           const SizedBox(

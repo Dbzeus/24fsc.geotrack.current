@@ -15,6 +15,7 @@ class CustomEditText extends StatelessWidget {
   TextInputType? keyboardType;
   int? maxLength, maxLines, minLines;
   Function(String)? onChanged;
+  Function()? onTap;
   TextAlign? textAlign;
   TextEditingController? controller;
   List<TextInputFormatter>? inputFormatters;
@@ -35,6 +36,7 @@ class CustomEditText extends StatelessWidget {
     this.borderRadius,
     this.keyboardType,
     this.onChanged,
+     this.onTap,
      this.inputFormatters,
     super.key});
 
@@ -60,6 +62,7 @@ class CustomEditText extends StatelessWidget {
         ),
         Center(
           child: TextFormField(
+            onTap: onTap,
             onChanged: onChanged,
             maxLines: maxLines,
             minLines: minLines,

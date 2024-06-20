@@ -989,9 +989,9 @@ class ApiCall {
     //debugPrint('${files.length} ${files.first.toString()}');
 
     var formData = FormData.fromMap({
-      'VisitingDetails ': jsonEncode(body),
+      'VisitingDetails': jsonEncode(body),
       'UploadImg' : imgFiles,
-      'UploadAudio ': files,
+      'UploadAudio': files,
     });
     debugPrint("Multipart file : $formData");
 

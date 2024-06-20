@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -7,6 +10,7 @@ import 'package:geotrack24fsc/utils/session.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:record/record.dart';
 import 'package:file/local.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,10 +40,20 @@ class CreateReportController extends GetxController {
       isPlayRecord = false.obs,
       isRecordStarted = false.obs;
   RxList selfies = RxList();
+  RxInt recordingTimer = 0.obs;
+  Timer? timer;
+
+
+
+  final player = AudioPlayer();
+  RxBool isPlay = false.obs;
+  RxDouble sliderValue = 0.0.obs;
+  late Duration audioDuration;
+
 
   //audio record
   RxString recordString = ''.obs, recordFilePath = ''.obs;
-  LocalFileSystem localFileSystem = LocalFileSystem();
+  LocalFileSystem localFileSystem = const LocalFileSystem();
 
 /*  late FlutterAudioRecorder _recorder;
 
@@ -81,6 +95,15 @@ class CreateReportController extends GetxController {
     }
   }
 
+  recordTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (recordingTimer.value >= 0 && isRecordStarted.value == true) {
+        recordingTimer++;
+        debugPrint("TIMER REcording: ${recordingTimer.value.toString()}");
+      }
+    });
+  }
+
   void startRecord() async {
     try {
       if (await record.hasPermission()) {
@@ -102,14 +125,15 @@ class CreateReportController extends GetxController {
         //await box.write(Session.audioPath, customPath);
 
         // Start recording
-        await record.start(
-          const RecordConfig(),
-          path: '$customPath.mp3',
-        );
+        recordTimer();
 
         showToastMsg("Record Started");
 
         isRecordStarted(true);
+        await record.start(
+          const RecordConfig(),
+          path: '$customPath.mp3',
+        );
       }
 
       /*if (await FlutterAudioRecorder.hasPermissions) {
@@ -187,12 +211,57 @@ class CreateReportController extends GetxController {
       showToastMsg("Record Stopped");
       // recordString('Record Duration ${current.duration.toString().split('.').first.padLeft(8, "0")}');
       recordString('Recorded');
+      timer?.cancel();
       isRecordStarted(false);
+      recordingTimer(0);
       //box.write(Session.audioPath, recordFilePath.value);
     } catch (e) {
       debugPrint("STOP:${e.toString()}");
     }
   }
+
+
+  playAudio(String audio, {bool fromCard = false}) async {
+    try {
+      Duration? res = await player.setUrl(audio);
+      if (res != null) {
+        isPlay(true);
+        player.play();
+        player.durationStream.listen(
+              (duration) {
+
+            // Update the slider when the duration changes
+            audioDuration = duration!;
+          },
+        );
+        player.playerStateStream.listen((event) {
+          if (event.processingState == ProcessingState.completed) {
+             isPlay(false);
+             sliderValue(0.0);
+          }
+        });
+        player.positionStream.listen((position) {
+
+          // Update the slider value based on the current position
+          fromCard
+              ? 0.0
+              : sliderValue(position.inSeconds / audioDuration.inSeconds);
+        });
+      }
+    } catch (e) {
+      log("Error loading audio source: $e");
+    }
+  }
+
+  stopAudio({bool fromCard = false}) async {
+    try {
+      await player.stop();
+      isPlay(false);
+    } catch (e) {
+      log("Error stop in audio source: $e");
+    }
+  }
+
 
   submitVisitingReport() async {
     if (await isNetConnected()) {
@@ -211,10 +280,10 @@ class CreateReportController extends GetxController {
         } else if (remarkController.text.isEmpty) {
           showToastMsg('Enter Remarks');
         } else {
-
           var params = {
             "VisitingID": 0,
-            "VisitingDate":mdyFormatter.format(formatter.parse(dateController.text)),
+            "VisitingDate":
+                mdyFormatter.format(formatter.parse(dateController.text)),
             "VisitingTime": timeController.text,
             "ClientName": clientNameController.text.trim(),
             "ContactPersonName": contactPersonController.text.trim(),
@@ -223,10 +292,10 @@ class CreateReportController extends GetxController {
             "CUID": box.read(Session.userid) ?? -1,
           };
 
-          var response = await ApiCall().submitVisitingReport(params, [""]);
+          var response = await ApiCall().submitVisitingReport(params, [recordFilePath.value]);
           if (response != null) {
             if (response["RtnStatus"]) {
-              //Get.offAndToNamed(Routes.visitingReport);
+              Get.back(result:  true);//Get.offAndToNamed(Routes.visitingReport);
             } else {
               showToastMsg(response["RtnMessage"]);
             }

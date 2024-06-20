@@ -107,22 +107,31 @@ class VisitingReportController extends GetxController {
 
   playAudio(String audio, {bool fromCard = false}) async {
     try {
-      debugPrint("isPlay 123${isPlay.value.toString()}");
       Duration? res = await player.setUrl(audio);
       if (res != null) {
         isPlay(true);
-        debugPrint("isPlay abcd${isPlay.value.toString()}");
-        await player.play();
+        player.play();
+        player.durationStream.listen(
+          (duration) {
+            // Update the slider when the duration changes
+            audioDuration = duration!;
+          },
+        );
         player.playerStateStream.listen((event) {
           if (event.processingState == ProcessingState.completed) {
             isPlay(false);
+            sliderValue(0.0);
           }
+        });
+        player.positionStream.listen((position) {
+          // Update the slider value based on the current position
+          fromCard
+              ? 0.0
+              : sliderValue(position.inSeconds / audioDuration.inSeconds);
         });
       }
     } catch (e) {
-      debugPrint("Error loading audio source: ${e.toString()}");
-      Get.back();
-      showToastMsg("Audio error");
+      log("Error loading audio source: $e");
     }
   }
 
@@ -165,34 +174,49 @@ class VisitingReportController extends GetxController {
           return AlertDialog(
             backgroundColor: whiteColor,
             content: SizedBox(
-              height: 20,
-              child: Center(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (audio.isNotEmpty) {
-                          isPlay.value ? stopAudio() : playAudio(audio);
-                        }
-                      },
-                      child: Icon(
-                        Icons.play_circle,
-                        color: secondaryColor,
-                        size: 30,
-                      ),
+              height: 70,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Audio", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Center(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Obx(
+                          () => GestureDetector(
+                            onTap: () {
+                              if (audio.isNotEmpty) {
+                                debugPrint("Audio url:$audio");
+                                isPlay.value ? stopAudio() : playAudio(audio);
+                              } else {
+                                showToastMsg("No Audio Found");
+                              }
+                            },
+                            child: Icon(
+                              isPlay.value
+                                  ? Icons.stop_circle
+                                  : Icons.play_circle,
+                              color: isPlay.value ? Colors.red : secondaryColor,
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                        Obx(
+                          () => Slider(
+                              value: sliderValue.value,
+                              onChanged: (value) {
+                                // final newPosition = value * controller.audioDuration.inMilliseconds;
+                                // controller.player.seek(Duration(milliseconds: newPosition.round()));
+                              },
+                              min: 0.0,
+                              max: 1.0),
+                        ),
+                      ],
                     ),
-                    Slider(
-                        value: sliderValue.value,
-                        onChanged: (value) {
-                          // final newPosition = value * controller.audioDuration.inMilliseconds;
-                          // controller.player.seek(Duration(milliseconds: newPosition.round()));
-                        },
-                        min: 0.0,
-                        max: 1.0),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           );
