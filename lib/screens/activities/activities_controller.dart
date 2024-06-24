@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -36,9 +37,9 @@ class ActivitiesController extends GetxController {
 
   // this will hold each polyline coordinate as Lat and Lng pairs
   RxList<LatLng> polylineCoordinates = RxList();
-  String googleAPIKey = 'AIzaSyD1bBcmlrx5A2rMbag6peaXEYqx3Rhn4lQ'; // solas track key
+  String googleAPIKey = 'AIzaSyBzW6RgOTU_W5XQtj7kDtLqiruXNnZMOhQ'; // 24fsc key
+  //String googleAPIKey = 'AIzaSyD1bBcmlrx5A2rMbag6peaXEYqx3Rhn4lQ'; // solas track key
   //'AIzaSyBOslPtgmIS7MdVcSMOVSOof_CvktVtk4E'; (mehala towers) (orbito asia) (maxx)
-
 
   @override
   void onInit() async {
@@ -120,24 +121,27 @@ class ActivitiesController extends GetxController {
         if (response.rtnStatus) {
           if (response.rtnData != null) {
             data(response.rtnData);
-            if(data.value!.timeLine.isNotEmpty){
+            if (data.value!.timeLine.isNotEmpty) {
               initialLocation.value = CameraPosition(
                   zoom: 10,
                   target: LatLng(
                       double.parse(data.value!.timeLine.first.latitude),
                       double.parse(data.value!.timeLine.first.longitude)));
 
-
+              points.clear();
+              polylines.clear();
+              polylineCoordinates.clear();
               for (var element in data.value!.timeLine) {
                 setMapPins(element!);
               }
-              generateRoutes();
-            }else{
-              showToastMsg("No activities found");
-              initialLocation =
-                  Rx(const CameraPosition(target: LatLng(12.971599, 77.594566), zoom: 10));
-            }
 
+              generateRoutes();
+            } else {
+              showToastMsg("No activities found");
+              initialLocation = Rx(const CameraPosition(
+                  target: LatLng(12.971599, 77.594566), zoom: 10));
+              polylines.clear();
+            }
           }
         }
       }
@@ -149,15 +153,16 @@ class ActivitiesController extends GetxController {
     points.add(
       LatLng(double.parse(element.latitude), double.parse(element.longitude)),
     );
+    debugPrint("Points: ${points.toString()}");
     markers.add(Marker(
       markerId: MarkerId('${element.hashCode}'),
       position: LatLng(
           double.parse(element.latitude), double.parse(element.longitude)),
-      icon: BitmapDescriptor.defaultMarkerWithHue(element.statusID == 1
+      icon: BitmapDescriptor.defaultMarkerWithHue(element.statusID == 1 //login
           ? BitmapDescriptor.hueGreen
-          : element.statusID == 2
+          : element.statusID == 2 // logout
               ? BitmapDescriptor.hueOrange
-              : element.statusID == 3
+              : element.statusID == 3 //get status
                   ? BitmapDescriptor.hueRed
                   : BitmapDescriptor.hueBlue),
       onTap: () {
@@ -165,13 +170,14 @@ class ActivitiesController extends GetxController {
         final snackBar = SnackBar(
           duration: const Duration(minutes: 1),
           behavior: SnackBarBehavior.floating,
+          backgroundColor: whiteColor,
           content: Column(
             children: [
               Text(element.geoStatus, style: TextStyle(color: secondaryColor)),
               const SizedBox(
                 height: 6,
               ),
-              Text(element.statusAddress),
+              Text(element.statusAddress,style: TextStyle(color: blackColor),),
             ],
           ),
         );
@@ -188,11 +194,12 @@ class ActivitiesController extends GetxController {
       int d = s + 1;
       if (d < points.length) {
         debugPrint("ABCD2");
-        LatLng source = LatLng(double.parse(points[s].latitude.toString()), double.parse(points[s].longitude.toString()));
+        LatLng source = LatLng(double.parse(points[s].latitude.toString()),
+            double.parse(points[s].longitude.toString()));
         debugPrint("source: ${source.toString()}");
         debugPrint("ABCD3");
-        LatLng destination =
-        LatLng(double.parse(points[d].latitude.toString()), double.parse(points[d].longitude.toString()));
+        LatLng destination = LatLng(double.parse(points[d].latitude.toString()),
+            double.parse(points[d].longitude.toString()));
         debugPrint("destination: ${destination.toString()}");
         List<LatLng> result = await getRouteBetweenCoordinates(
             googleAPIKey,
@@ -206,13 +213,45 @@ class ActivitiesController extends GetxController {
           for (var point in result) {
             polylineCoordinates.add(point);
           }
+          /*for (int i = 0; i < result.length; i++) {
+            //for (var point in result) {
+            debugPrint("Point length: ${result[i]}");
+            if (i == 0) {
+              debugPrint("Points: 0");
+              polylineCoordinates.add(result[i]);
+              polylines.add(Polyline(
+                  polylineId: PolylineId('1'),
+                  visible: true,
+                  color: Colors.green,
+                  points: polylineCoordinates.value));
+            } else if (i == (result.length - 1)) {
+              debugPrint("Points: last");
+              polylineCoordinates.add(result[i]);
+              polylines.add(Polyline(
+                  polylineId: PolylineId('2'),
+                  visible: true,
+                  color: Colors.orange,
+                  points: polylineCoordinates.value));
+            } else {
+              debugPrint("Points: between");
+              polylineCoordinates.add(result[i]);
+              polylines.add(Polyline(
+                  polylineId: PolylineId('3'),
+                  visible: true,
+                  color: Colors.blue,
+                  points: polylineCoordinates.value));
+            }
+          }*/
         }
       }
     }
-
     Polyline polyline = Polyline(
-        polylineId: const PolylineId('1'),
-        color: Colors.lightBlue,
+        polylineId: PolylineId('1'),
+        visible: true,
+        width: 4,
+        endCap: Cap.roundCap,
+        startCap: Cap.roundCap,
+        color: Colors.blue,
         points: polylineCoordinates.value);
 
     polylines.add(polyline);
@@ -250,8 +289,16 @@ class ActivitiesController extends GetxController {
     try {
       if (response != null) {
         if (response["routes"].isNotEmpty) {
-          polylinePoints = decodeEncodedPolyline(
-              jsonDecode(response)["routes"][0]["overview_polyline"]["points"]);
+          var res = PolylinePoints().decodePolyline(
+              response["routes"][0]["overview_polyline"]["points"]);
+
+          for (var i in res) {
+            polylinePoints.add(LatLng(i.latitude, i.longitude));
+          }
+
+          // polylinePoints = decodeEncodedPolyline(
+          //     jsonDecode(response["routes"][0]["overview_polyline"]["points"]));
+          //jsonDecode(response)["routes"][0]["overview_polyline"]["points"]);
         }
       }
     } catch (e) {
@@ -288,10 +335,11 @@ class ActivitiesController extends GetxController {
       LatLng p = LatLng((lat / 1E5).toDouble(), (lng / 1E5).toDouble());
       poly.add(p);
     }
+    debugPrint("Poly: ${poly}");
     return poly;
   }
 
-  /*drawPolyLine() {
+/*drawPolyLine() {
     polylines.add(Polyline(
       polylineId: const PolylineId('line1'),
       visible: true,

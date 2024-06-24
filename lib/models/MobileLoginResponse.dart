@@ -118,6 +118,7 @@ class RtnData {
     isMarketing = json['IsMarketing'];
     isILT = json['IsILT'];
     customerID = json['CustomerID'];
+    timeInterval = json['TimeInterval'];
   }
   late int userID;
   late String firstName;
@@ -142,6 +143,7 @@ class RtnData {
   late bool isMarketing;
   late bool isILT;
   late int customerID;
+  late int timeInterval;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -168,6 +170,7 @@ class RtnData {
     map['IsMarketing'] = isMarketing;
     map['IsILT'] = isILT;
     map['CustomerID'] = customerID;
+    map['TimeInterval'] = timeInterval;
     return map;
   }
 

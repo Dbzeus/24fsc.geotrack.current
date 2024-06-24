@@ -64,6 +64,7 @@ class HomeController extends GetxController {
 
   late PackageInfo packageInfo;
   Rx<String> currentDate = "".obs;
+  var showFormat = DateFormat('dd MMM yyyy');
 
   Rx<ApplicationSettingResponseData?> settings = Rx(null);
   final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -91,6 +92,42 @@ class HomeController extends GetxController {
     }
     _box.write(Session.deviceID, deviceId);
     getTimeline();
+  }
+
+  checkLogIn() {
+    var currentDate = showFormat.format(DateTime.now());
+    if (_box.read(Session.logInDate) == null) {
+      //variable thevai illa
+      _box.write(Session.logInDate, currentDate);
+      debugPrint("First Date: $currentDate");
+    } else {
+      if (_box.read(Session.logInDate) != currentDate) {
+        Get.defaultDialog(
+            barrierDismissible: false,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 10,
+            ),
+            title: "Session Expired!",
+            titleStyle: const TextStyle(
+              color: primaryColor,
+              fontWeight: FontWeight.bold,
+            ),
+            middleText: "Your session has expired. Please re-login to continue",
+            middleTextStyle: const TextStyle(
+              fontSize: 12,
+            ),
+            confirm: Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  appLogout();
+                },
+                child: const Text("Logout"),
+              ),
+            ));
+      }
+    }
   }
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -264,6 +301,8 @@ class HomeController extends GetxController {
                 "AUTO FETCH in foreground:${_box.read(Session.isAutoFetch)}");
             var permission = await checkLocationPermission1();
             if (permission == true) {
+              int time = _box.read(Session.serviceTimeInterval) ;
+              debugPrint("Service time in home: ${time.toString()}");
               await initializeService();
               if (await FlutterBackgroundService().isRunning()) {
                 FlutterBackgroundService().invoke('stopService');

@@ -11,20 +11,23 @@ import 'package:intl/intl.dart';
 import '../apis/api_call.dart';
 import 'location_permission.dart';
 
+
+
 Future<void> initializeService() async {
+  //serviceTime = time;
   final service = FlutterBackgroundService();
   await service.configure(
       iosConfiguration: IosConfiguration(
-        // this will be executed when app is in foreground in separated isolate
-        onForeground: onStart,
-        // you have to enable background fetch capability on xcode project
-      ),
+          // this will be executed when app is in foreground in separated isolate
+          onForeground: onStart
+          // you have to enable background fetch capability on xcode project
+          ),
       androidConfiguration: AndroidConfiguration(
           isForegroundMode: true, autoStart: true, onStart: onStart));
 }
 
 @pragma('vm:entry-point')
-void onStart(ServiceInstance serviceInstance) {
+Future<void> onStart(ServiceInstance serviceInstance) async {
   DartPluginRegistrant.ensureInitialized();
 
   if (serviceInstance is AndroidServiceInstance) {
@@ -39,8 +42,11 @@ void onStart(ServiceInstance serviceInstance) {
   serviceInstance.on('stopService').listen((event) {
     serviceInstance.stopSelf();
   });
-
-  Timer.periodic(const Duration(minutes: 1), (timer) async {
+await GetStorage.init();
+  final box = GetStorage();
+  int time = await box.read(Session.serviceTimeInterval) /*?? 10*/;
+  debugPrint("Service time in service: ${time.toString()}");
+  Timer.periodic(Duration(minutes: time), (timer) async {
     if (serviceInstance is AndroidServiceInstance) {
       if (await serviceInstance.isForegroundService()) {
         //debugPrint("foreground service is running");
@@ -66,33 +72,31 @@ void onStart(ServiceInstance serviceInstance) {
         timeFormat.parse(DateTime.now().toString().split(" ")[1].split(".")[0]);
     DateTime logoutTime = timeFormat.parse("20:00:00");
 
-    debugPrint("ABCD1");
+    //debugPrint("ABCD1");
 
     if (currentTime.isAfter(logoutTime)) {
-      debugPrint("ABCD2");
+      //debugPrint("ABCD2");
+      await GetStorage.init();
       final box = GetStorage();
-      debugPrint(
-          "ABCD Session:${box.read(Session.isRunnerCancelling).toString()}");
+      // debugPrint(
+      //     "ABCD Session:${box.read(Session.isRunnerCancelling).toString()}");
       if (box.read(Session.isRunnerCancelling) != null) {
         if (box.read(Session.isRunnerCancelling) == true) {
-          debugPrint("ABCD3");
+          // debugPrint("ABCD3");
           var res = await backgroundLocationService("4");
           if (res == true) {
-            debugPrint("ABCD4");
+            // debugPrint("ABCD4");
             box.write(Session.isRunnerCancelling, false);
             serviceInstance.stopSelf();
           }
         }
       } else {
-        debugPrint("ABCD Foreground");
+        // debugPrint("ABCD Foreground");
         serviceInstance.invoke("setAsForeground");
       }
-
-
-    }else{
-      debugPrint("ABCD5");
+    } else {
+      // debugPrint("ABCD5");
       backgroundLocationService("3");
-
     }
     serviceInstance.invoke('update');
   });
@@ -104,7 +108,7 @@ backgroundLocationService(String status) async {
   if (box.read(Session.userid) != null ||
       box.read(Session.version) != null ||
       box.read(Session.deviceID) != null) {
-    debugPrint("ABCD Status id: ${status.toString()}");
+    // debugPrint("ABCD Status id: ${status.toString()}");
     var params = {
       "UserID": box.read(Session.userid).toString(),
       "StatusID": status,
@@ -123,12 +127,12 @@ backgroundLocationService(String status) async {
     var response = await ApiCall().updateStatus(params);
     if (response != null) {
       if (response['RtnStatus']) {
-        debugPrint("ABCDEFGHIJKL");
+        // debugPrint("ABCDEFGHIJKL");
         return true;
       }
     }
   } else {
-    debugPrint("1234567890");
+    // debugPrint("1234567890");
     backgroundLocationService(status);
     return false;
   }

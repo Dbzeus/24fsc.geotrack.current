@@ -17,6 +17,7 @@ class Session {
   static const String isCustomer = "isCustomer";
   static const String isMarketing = "isMarketing";
   static const String isILT = "isILT";
+  static const String serviceTimeInterval = "timeInterval";
 
   //String
   static const String token = "token";
@@ -32,6 +33,8 @@ class Session {
   static const String roleName = "roleName";
   static const String designation = "designation";
   static const String appMenu = "appMenu";
+
+  static const logInDate = "logInDate";
 
   /*static sessionLogout(GetStorage _box){
     String mobile=_box.read(userPhone) ?? '';

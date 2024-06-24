@@ -173,6 +173,8 @@ class MobileLoginController extends GetxController {
     _box.write(Session.customerId, rtnData[0].customerID);
     _box.write(Session.isMarketing, rtnData[0].isMarketing);
     _box.write(Session.isILT, rtnData[0].isILT);
+    _box.write(Session.serviceTimeInterval, rtnData[0].timeInterval);
+    debugPrint("Time interval:${_box.read(Session.serviceTimeInterval.toString())}");
     Get.offAllNamed(Routes.home);
   }
 

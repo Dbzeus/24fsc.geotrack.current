@@ -63,16 +63,32 @@ class HomeScreen extends GetView<HomeController> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.5,
                         child: Center(
-                          child: Text(
-                            "welcome, ${controller.userName.value}",
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: blackColor,
-                            ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Welcome",
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: blackColor,
+                                ),
+                              ),
+                              Text(
+                               "${controller.userName.value} ",
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: blackColor,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
