@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:slider_button/slider_button.dart';
 
 import '../../routes/app_routes.dart';
+import '../../utils/services.dart';
 import 'history.dart';
 import 'home_controller.dart';
 
@@ -77,15 +78,17 @@ class HomeScreen extends GetView<HomeController> {
                                   color: blackColor,
                                 ),
                               ),
-                              Text(
-                               "${controller.userName.value} ",
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: blackColor,
+                              Obx(
+                                () => Text(
+                                  "${controller.userName.value} ",
+                                  maxLines: 2,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: blackColor,
+                                  ),
                                 ),
                               ),
                             ],
@@ -109,137 +112,159 @@ class HomeScreen extends GetView<HomeController> {
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
             Obx(
               () => controller.isLoading.value
                   ? const Expanded(
                       child: Center(child: CircularProgressIndicator()))
-                  : Column(
-                      children: [
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                  : Expanded(
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('Your TimeLine\'s',
+                                          style: TextStyle(
+                                              color: blackColor,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold)),
+                                      const SizedBox(height: 2),
+                                      Obx(() => InkWell(
+                                            onTap: () =>
+                                                controller.changeDate(),
+                                            child: Text(
+                                                '${controller.currentDate}',
+                                                style: const TextStyle(
+                                                    color: secondaryColor,
+                                                    fontSize: 12,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                                Row(
                                   children: [
-                                    const Text('Your TimeLine\'s',
-                                        style: TextStyle(
-                                            color: blackColor,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold)),
-                                    const SizedBox(height: 2),
-                                    Obx(() => InkWell(
-                                          onTap: () => controller.changeDate(),
-                                          child: Text(
-                                              '${controller.currentDate}',
-                                              style: const TextStyle(
-                                                  color: secondaryColor,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold)),
-                                        )),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        controller.getTimeline();
+                                        /*var res = await FlutterBackgroundService().isRunning();
+                                        if(res && controller
+                                            .settings.value?.status.first.statusID == 2)//2 is logout
+                                           {
+                                          debugPrint("fdgdfgdf");
+                                          backgroundLocationService("4"); //manual update
+                                        }*/
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                            color: secondaryColor,
+                                            borderRadius:
+                                                BorderRadius.circular(6)),
+                                        child: const Row(
+                                          children: [
+                                            Text(
+                                              "Refresh",
+                                              style: TextStyle(
+                                                  color: whiteColor,
+                                                  fontSize: 12),
+                                            ),
+                                            Icon(
+                                              Icons.refresh_outlined,
+                                              size: 20,
+                                              color: whiteColor,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 4,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () async {},
+                                      child: const Icon(
+                                        Icons.circle_notifications,
+                                        size: 34,
+                                        color: secondaryColor,
+                                      ),
+                                    ),
+                                    // IconButton(
+                                    //     onPressed: () async {
+                                    //       var res = await FlutterBackgroundService().isRunning();
+                                    //       debugPrint("Service time in service: ${res.toString()}");
+                                    //       // if (await FlutterBackgroundService().isRunning()) {
+                                    //       //   FlutterBackgroundService().invoke('stopService');
+                                    //       // controller.box.write(Session.isRunnerCancelling, false);
+                                    //       // }
+                                    //     },
+                                    //     icon:
+                                    //         Icon(Icons.accessibility_new_sharp))
                                   ],
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      controller.getTimeline();
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                          color: secondaryColor,
-                                          borderRadius:
-                                              BorderRadius.circular(6)),
-                                      child: const Row(
-                                        children: [
-                                          Text(
-                                            "Refresh",
-                                            style: TextStyle(
-                                                color: whiteColor,
-                                                fontSize: 12),
-                                          ),
-                                          Icon(
-                                            Icons.refresh_outlined,
-                                            size: 20,
-                                            color: whiteColor,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 4,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      debugPrint("XYz");
-                                      if (await FlutterBackgroundService()
-                                          .isRunning()) {
-                                        debugPrint("running in background");
-                                      }
-                                    },
-                                    child: const Icon(
-                                      Icons.circle_notifications,
-                                      size: 34,
-                                      color: secondaryColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        Obx(
-                          () => controller.timelines.isEmpty
-                              ? Align(
-                                  alignment: Alignment.center,
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Obx(
-                                      () => Text(
-                                        controller.msg.value,
-                                        style: const TextStyle(
-                                            color: secondaryColor,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12),
-                                      ),
-                                    ),
-                                  ),
-                                )
-                              : SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.65,
-                                  child: ListView.builder(
-                                      padding: const EdgeInsets.all(0),
-                                      itemCount: controller.timelines.length,
-                                      physics: const BouncingScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        return HistoryView(
-                                          index,
-                                          controller.timelines.length,
-                                          controller.timelines[index],
-                                        );
-                                      }),
+                                const SizedBox(
+                                  width: 4,
                                 ),
-                        )
-                      ],
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          Obx(
+                            () => controller.timelines.isEmpty
+                                ? Align(
+                                    alignment: Alignment.center,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Obx(
+                                        () => Text(
+                                          controller.msg.value,
+                                          style: const TextStyle(
+                                              color: secondaryColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                : Expanded(
+                                    child: SizedBox(
+                                      // height: MediaQuery.of(context).size.height *
+                                      //     0.65,
+                                      child: ListView.builder(
+                                          padding: const EdgeInsets.all(0),
+                                          itemCount:
+                                              controller.timelines.length,
+                                          physics:
+                                              const BouncingScrollPhysics(),
+                                          itemBuilder: (context, index) {
+                                            return HistoryView(
+                                              index,
+                                              controller.timelines.length,
+                                              controller.timelines[index],
+                                            );
+                                          }),
+                                    ),
+                                  ),
+                          )
+                        ],
+                      ),
                     ),
             ),
           ],

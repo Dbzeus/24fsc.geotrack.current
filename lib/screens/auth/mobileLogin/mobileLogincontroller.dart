@@ -3,14 +3,17 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:device_info/device_info.dart';
+import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:geotrack24fsc/utils/dialogs.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:package_info/package_info.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../apis/api_call.dart';
 
@@ -50,7 +53,7 @@ class MobileLoginController extends GetxController {
   var info;
   final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
-  //final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   @override
   void onInit() async {
@@ -58,11 +61,72 @@ class MobileLoginController extends GetxController {
     packageInfo = await PackageInfo.fromPlatform();
     _box.write(Session.version, packageInfo.version);
     appVersion('App Version ${packageInfo.version}');
+    /*backgroundAccess();
+    bool? isAutoStartEnabled =
+        await DisableBatteryOptimization.isAutoStartEnabled;
+    if (isAutoStartEnabled == false) {
+      await DisableBatteryOptimization.showEnableAutoStartSettings(
+          "Enable Auto Start",
+          "Follow the steps and enable the auto start of this app");
+    }
+    bool? isBatteryOptimizationDisabled =
+        await DisableBatteryOptimization.isBatteryOptimizationDisabled;
+    if (isBatteryOptimizationDisabled == false) {
+
+      await DisableBatteryOptimization.showDisableBatteryOptimizationSettings();
+    }
+    bool? isAllBatteryOptimizationDisabled =
+        await DisableBatteryOptimization.isAllBatteryOptimizationDisabled;
+    if (isAllBatteryOptimizationDisabled == false) {
+      await DisableBatteryOptimization.showDisableAllOptimizationsSettings(
+          "Enable Auto Start",
+          "Follow the steps and enable the auto start of this app",
+          "test",
+          "test");
+    }
+    bool? isManufacturerBatteryOptimizationDisabled =
+        await DisableBatteryOptimization
+            .isManufacturerBatteryOptimizationDisabled;
+    if (isManufacturerBatteryOptimizationDisabled == false) {
+      await DisableBatteryOptimization.showDisableManufacturerBatteryOptimizationSettings(
+          "Enable Auto Start",
+          "Follow the steps and enable the auto start of this app");
+    }
+
+    debugPrint("isAutoStartEnabled:${isAutoStartEnabled.toString()}");
+    debugPrint(
+        "isBatteryOptimizationDisabled:${isBatteryOptimizationDisabled.toString()}");
+    debugPrint(
+        "isAllBatteryOptimizationDisabled:${isAllBatteryOptimizationDisabled.toString()}");
+    debugPrint(
+        "isManufacturerBatteryOptimizationDisabled:${isManufacturerBatteryOptimizationDisabled.toString()}");*/
 
     if (Platform.isAndroid) {
       info = await _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
     } else if (Platform.isIOS) {
       info = await _readIosBuildData(await deviceInfoPlugin.iosInfo);
+    }
+  }
+
+  backgroundAccess() async {
+
+    bool isServiceEnable = await Geolocator.isLocationServiceEnabled();
+    if (!isServiceEnable) {
+      await Geolocator.getCurrentPosition();
+      //await Geolocator.openLocationSettings();
+    }
+    PermissionStatus res =
+    await Permission.ignoreBatteryOptimizations.request();
+    debugPrint("PermissionStatus:$res");
+
+    // final bool status = await FlutterOverlayWindow.isPermissionGranted();
+    // if (status == false) {
+    //   final bool? status = await FlutterOverlayWindow.requestPermission();
+    // }
+    if (res.isGranted) {
+      return;
+    } else {
+      backgroundAccess();//await Permission.ignoreBatteryOptimizations.request();
     }
   }
 
@@ -98,8 +162,9 @@ class MobileLoginController extends GetxController {
   @override
   void onReady() async {
     //await checkLocationPermission();
-    // _fcm.requestPermission();
-    // token = await _fcm.getToken() ?? '';
+    _fcm.requestPermission();
+    token = await _fcm.getToken() ?? '';
+    debugPrint("FCM token: $token");
   }
 
   login() async {
@@ -118,9 +183,9 @@ class MobileLoginController extends GetxController {
       }
       showLoader(title: "Loading");
 
-      /* if (token.isEmpty) {
+      if (token.isEmpty) {
         token = await _fcm.getToken() ?? '';
-      }*/
+      }
       _box.write(Session.token, token);
 
       MobileLoginResponse? response = await ApiCall().checkLogin(
@@ -130,7 +195,7 @@ class MobileLoginController extends GetxController {
         if (response.rtnStatus ?? false) {
           showToastMsg(response.rtnMessage);
           goToHome(response.rtnData);
-        }else {
+        } else {
           showToastMsg('${response.rtnMessage}');
         } /*else {
           if (response.id == 1) {
@@ -174,9 +239,9 @@ class MobileLoginController extends GetxController {
     _box.write(Session.isMarketing, rtnData[0].isMarketing);
     _box.write(Session.isILT, rtnData[0].isILT);
     _box.write(Session.serviceTimeInterval, rtnData[0].timeInterval);
-    debugPrint("Time interval:${_box.read(Session.serviceTimeInterval.toString())}");
+    _box.write(Session.autoLogoutTime, rtnData[0].autoLogoutTime);
+    debugPrint(
+        "Time interval:${_box.read(Session.serviceTimeInterval.toString())}");
     Get.offAllNamed(Routes.home);
   }
-
-
 }

@@ -1,69 +1,112 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:get/get.dart';
-import 'package:permission_handler/permission_handler.dart';
 
-import '../widgets/custom_dialog.dart';
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  '24fsc geotrack',
+  '24fsc geotrack',
+  description: '24fsc geotrack app notification',
+  importance: Importance.max,
+  playSound: true,
+  enableLights: true,
+  enableVibration: true,
+);
 
-class LocalNotification {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationPlugin =
-      FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationplugin =
+FlutterLocalNotificationsPlugin();
 
-  AndroidNotificationDetails androidSettings = AndroidNotificationDetails(
-    '24FSC',
-    '24FSC Important',
-    channelDescription: 'DBZeus 24FSC app notification',
-  );
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  debugPrint("Handling a background message : ${message.messageId}");
+}
 
+class FirebaseNotifcation {
+  initialize() async {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: 'AIzaSyD-yyKSEHCxTnszn2wASaPklTxoCU0U5oQ',
+          appId: '1:734068954892:android:dd7d9d64ad3260cd0e5b29',
+          messagingSenderId: '734068954892',
+          projectId: 'fscgeotrack-9bf44',)
+    );
+    // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    debugPrint(await FirebaseMessaging.instance.getToken());
 
+    var intializationSettingsAndroid =
+    const AndroidInitializationSettings('mipmap/launcher_icon');
 
-  initializer() {
-    var initializationsSettingsAndroid =
-        const AndroidInitializationSettings('mipmap/ic_launcher');
-
-    final DarwinInitializationSettings initializationSettingsIOS =
-        DarwinInitializationSettings(
+    const DarwinInitializationSettings initializationSettingsIOS =
+    DarwinInitializationSettings(
       requestSoundPermission: true,
       requestBadgePermission: true,
       requestAlertPermission: true,
     );
 
     var initializationSettings = InitializationSettings(
-        android: initializationsSettingsAndroid,
-        iOS: initializationSettingsIOS);
-    flutterLocalNotificationPlugin.initialize(initializationSettings);
-  }
+        android: intializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationplugin.initialize(initializationSettings);
 
-  showNotification(RepeatInterval interva ,String latlang) async {
-    var notificationDetails = NotificationDetails(
-      android: androidSettings,
-    );
-    await flutterLocalNotificationPlugin.show(1, "24FSC", latlang,  notificationDetails);
-  }
-}
-
-
-notificationPermission()async{
-  var status = await Permission.notification.request();
-  if (status == PermissionStatus.granted) {
-    // Permission granted
-  } else if (status == PermissionStatus.denied || status == PermissionStatus.restricted) {
-    // Permission denied or restricted, show an explanation
-    showCustomAlertDialog(title: 'Notification Permission',
-      content: 'Please enable notification access in app settings.',
-      confirm: "OK",
-      onTabConfirm: ()=> Get.back(),
+    FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
     );
 
-  } else if (status == PermissionStatus.permanentlyDenied) {
-    // Permission permanently denied, open app settings
+    await flutterLocalNotificationplugin
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
 
-    showCustomAlertDialog(title: 'Notification Permission',
-        content: 'Please enable notification access in app settings.',
-        confirm: "Settings",
-        onTabConfirm: ()=> openAppSettings(),
-        isDismissable: false
-    );
-
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      debugPrint(message.toString());
+      notify(message);
+    });
   }
 
+  notify(RemoteMessage message) async {
+    RemoteNotification? notification = message.notification;
+    AndroidNotification? android = message.notification?.android;
+    if (notification != null && android != null) {
+      AndroidNotificationDetails notificationDetails =
+      AndroidNotificationDetails(channel.id, channel.name,
+          channelDescription: channel.description,
+          styleInformation:
+          BigTextStyleInformation(notification.body ?? ''),
+          importance: Importance.max,
+          priority: Priority.high,
+          groupKey: channel.id);
+      NotificationDetails notificationDetailsPlatformSpefics =
+      NotificationDetails(android: notificationDetails);
+      flutterLocalNotificationplugin.show(
+          notification.hashCode,
+          notification.title,
+          notification.body,
+          notificationDetailsPlatformSpefics);
+    }
+
+    List<ActiveNotification>? activeNotifications =
+    await flutterLocalNotificationplugin
+        .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>()
+        ?.getActiveNotifications();
+    if (activeNotifications != null && activeNotifications.isNotEmpty) {
+      List<String> lines =
+      activeNotifications.map((e) => e.title.toString()).toList();
+      InboxStyleInformation inboxStyleInformation = InboxStyleInformation(lines,
+          contentTitle: "${activeNotifications.length - 1} messages",
+          summaryText: "${activeNotifications.length - 1} messages");
+      AndroidNotificationDetails groupNotificationDetails =
+      AndroidNotificationDetails(channel.id, channel.name,
+          channelDescription: channel.description,
+          styleInformation: inboxStyleInformation,
+          setAsGroupSummary: true,
+          groupKey: channel.id);
+
+      NotificationDetails groupNotificationDetailsPlatformSpefics =
+      NotificationDetails(android: groupNotificationDetails);
+      await flutterLocalNotificationplugin.show(
+          0, '', '', groupNotificationDetailsPlatformSpefics);
+    }
+  }
 }

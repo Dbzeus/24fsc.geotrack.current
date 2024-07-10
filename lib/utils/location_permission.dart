@@ -57,8 +57,9 @@ Future<bool> checkLocationPermission1() async {
         confirm: CustomButton(
             text: "Settings",
             onTap: () {
-              openAppSettings();
               Get.back();
+              openAppSettings();
+
             }));
     return false;
   }

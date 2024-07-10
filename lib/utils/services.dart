@@ -11,8 +11,7 @@ import 'package:intl/intl.dart';
 import '../apis/api_call.dart';
 import 'location_permission.dart';
 
-
-
+//@pragma('vm:entry-point',true)
 Future<void> initializeService() async {
   //serviceTime = time;
   final service = FlutterBackgroundService();
@@ -24,9 +23,10 @@ Future<void> initializeService() async {
           ),
       androidConfiguration: AndroidConfiguration(
           isForegroundMode: true, autoStart: true, onStart: onStart));
+  //service.startService();
 }
 
-@pragma('vm:entry-point')
+@pragma('vm:entry-point',true)
 Future<void> onStart(ServiceInstance serviceInstance) async {
   DartPluginRegistrant.ensureInitialized();
 
@@ -42,13 +42,16 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
   serviceInstance.on('stopService').listen((event) {
     serviceInstance.stopSelf();
   });
-await GetStorage.init();
+  await GetStorage.init();
   final box = GetStorage();
   int time = await box.read(Session.serviceTimeInterval) /*?? 10*/;
+  String Autologouttime = await box.read(Session.autoLogoutTime) /*?? 10*/;
   debugPrint("Service time in service: ${time.toString()}");
-  Timer.periodic(Duration(minutes: time), (timer) async {
+  Timer.periodic(Duration(minutes: 1), (timer) async {
     if (serviceInstance is AndroidServiceInstance) {
       if (await serviceInstance.isForegroundService()) {
+
+
         //debugPrint("foreground service is running");
         /*await FlutterLocalNotificationsPlugin().show(1, "24FSC", "App is running....",const NotificationDetails(
           android: AndroidNotificationDetails(
@@ -70,7 +73,7 @@ await GetStorage.init();
 
     DateTime currentTime =
         timeFormat.parse(DateTime.now().toString().split(" ")[1].split(".")[0]);
-    DateTime logoutTime = timeFormat.parse("20:00:00");
+    DateTime logoutTime = timeFormat.parse(Autologouttime);
 
     //debugPrint("ABCD1");
 
@@ -96,14 +99,16 @@ await GetStorage.init();
       }
     } else {
       // debugPrint("ABCD5");
-      backgroundLocationService("3");
+      backgroundLocationService("3"); // auto fetch
     }
     serviceInstance.invoke('update');
   });
 }
 
+@pragma('vm:entry-point',true)
 backgroundLocationService(String status) async {
   var position = await getCurrentLocationForBackgroundFetch();
+  //await GetStorage.init();
   final box = GetStorage();
   if (box.read(Session.userid) != null ||
       box.read(Session.version) != null ||
@@ -111,9 +116,9 @@ backgroundLocationService(String status) async {
     // debugPrint("ABCD Status id: ${status.toString()}");
     var params = {
       "UserID": box.read(Session.userid).toString(),
-      "StatusID": status,
-      "Latitude": '${position!.latitude}',
-      "Longitude": '${position.longitude}',
+      "StatusID": position != null ? status : "3", //for missed slot
+      "Latitude": position != null ? '${position.latitude}' : 0,
+      "Longitude": position != null ? '${position.longitude}' : 0,
       "MVersion": box.read(Session.version).toString() ?? "",
       "Battery": "",
       "DeviceID": box.read(Session.deviceID).toString() ?? "",

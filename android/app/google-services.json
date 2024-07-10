@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "734068954892",
+    "project_id": "fscgeotrack-9bf44",
+    "storage_bucket": "fscgeotrack-9bf44.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:734068954892:android:dd7d9d64ad3260cd0e5b29",
+        "android_client_info": {
+          "package_name": "com.dbzeus.geotrack24FSC"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-yyKSEHCxTnszn2wASaPklTxoCU0U5oQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

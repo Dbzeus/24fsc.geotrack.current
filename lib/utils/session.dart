@@ -18,6 +18,7 @@ class Session {
   static const String isMarketing = "isMarketing";
   static const String isILT = "isILT";
   static const String serviceTimeInterval = "timeInterval";
+  static const String autoLogoutTime = "autoLogoutTime";
 
   //String
   static const String token = "token";

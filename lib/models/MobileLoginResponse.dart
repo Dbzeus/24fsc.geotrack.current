@@ -119,6 +119,7 @@ class RtnData {
     isILT = json['IsILT'];
     customerID = json['CustomerID'];
     timeInterval = json['TimeInterval'];
+    autoLogoutTime = json['Autologouttime'];
   }
   late int userID;
   late String firstName;
@@ -144,6 +145,7 @@ class RtnData {
   late bool isILT;
   late int customerID;
   late int timeInterval;
+  late String autoLogoutTime;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -171,6 +173,7 @@ class RtnData {
     map['IsILT'] = isILT;
     map['CustomerID'] = customerID;
     map['TimeInterval'] = timeInterval;
+    map['Autologouttime'] = autoLogoutTime;
     return map;
   }
 

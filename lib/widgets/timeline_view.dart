@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:geotrack24fsc/models/DashboardResponse.dart';
-import 'package:geotrack24fsc/screens/onboarding/onboardingScreen.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
-import '../../models/GeoHistoryResponse.dart';
 
-import '../../utils/hexcolor.dart';
 
 class TimelineView extends StatelessWidget {
  final int index, length;
@@ -39,6 +36,7 @@ class TimelineView extends StatelessWidget {
             child: Container(
               height: 20,
               width: 20,
+              
               decoration:  BoxDecoration(
                 shape: BoxShape.circle,
                 color: secondaryColor,
@@ -75,25 +73,40 @@ class TimelineView extends StatelessWidget {
         ],
       ),
       endChild: Container(
-        height: 40,
-        
         decoration: BoxDecoration(
           color: lightBgGreenColor,
           border: Border.all(color: primaryColor),
           borderRadius: BorderRadius.circular(12)
         ),
         margin: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
-        child:  Center(
-          child: Text(
-            data.geoStatus,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                fontSize: 12,
-                color: secondaryColor,
-                fontWeight: FontWeight.bold),
-          ),
+        padding: EdgeInsets.all(6),
+        child:  Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              data.geoStatus,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 12,
+                  color: secondaryColor,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              height: 4,
+            ),
+            Text(
+              data.statusAddress,
+              textAlign: TextAlign.start,
+              maxLines: 5,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 8,
+                  color: blackColor,
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
     );

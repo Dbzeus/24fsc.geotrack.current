@@ -256,7 +256,7 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
         },
         backgroundColor: blackColor,
         child: const Icon(
-          Icons.contact_page_outlined,
+          Icons.create,
           size: 30,
           color: whiteColor,
         ),
@@ -381,7 +381,7 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
                     Expanded(
                       child: Text(
                         data["Remarks"].toString(),
-                        maxLines: 2,
+                        maxLines: 10,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 12,

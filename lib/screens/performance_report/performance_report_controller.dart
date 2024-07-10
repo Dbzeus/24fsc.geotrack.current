@@ -5,8 +5,10 @@ import 'package:intl/intl.dart';
 class PerformanceReportController extends GetxController{
   Rx<String> currentDate = "".obs;
   DateTime now = DateTime.now();
-  RxInt daysInMonth = 0.obs;
-  List<DateTime> days = [];
+
+
+  RxInt daysInMonth = 0.obs, isSelectedDate = (-1).obs;
+  RxList<DateTime> days = <DateTime>[].obs;
 
 
 
@@ -16,7 +18,7 @@ class PerformanceReportController extends GetxController{
     currentDate(DateFormat('MMM dd yyyy').format(DateTime.now()));
 
     daysInMonth.value = DateUtils.getDaysInMonth(now.year, now.month);
-    days = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
+    days.value = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
     debugPrint("days: ${days.toString()}");
 
 
@@ -38,6 +40,20 @@ class PerformanceReportController extends GetxController{
     }
 
     return days;
+  }
+
+  String getDayOfWeek(DateTime date) {
+    const List<String> daysOfWeek = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
+
+    return daysOfWeek[date.weekday - 1];
   }
 
   changeDate() async {

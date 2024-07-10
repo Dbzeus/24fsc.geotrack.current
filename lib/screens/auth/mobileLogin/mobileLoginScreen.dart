@@ -118,10 +118,18 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                       text: "verify",
                       onTap: () async {
 
-                        await notificationPermission();
+                       // await notificationPermission();
                         var res=await AudioRecorder().hasPermission();
+                        var permission = await checkLocationPermission1();
+                        if(permission ==true){
+                          controller.login();
+                        }else{
+                          var permission = await checkLocationPermission1();
+                          if(permission ==true){
+                            controller.login();
+                          }
+                        }
 
-                        controller.login();
                        /* var permission = await checkLocationPermission1();
                         if (permission == true) {
 

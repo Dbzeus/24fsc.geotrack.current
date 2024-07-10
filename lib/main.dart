@@ -1,21 +1,25 @@
 import 'package:alice/alice.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:geotrack24fsc/routes/app_pages.dart';
 import 'package:geotrack24fsc/routes/app_routes.dart';
+import 'package:geotrack24fsc/utils/notification.dart';
 
 import 'package:geotrack24fsc/utils/session.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-Future<void> main() async {
+// overlay entry point
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //debugPaintSizeEnabled = true; for layout bound
   //check session
   await GetStorage.init();
+  //firebase
+  await FirebaseNotifcation().initialize();
 
   GetStorage box = GetStorage();
   String initial = Routes.onboarding;
@@ -29,6 +33,9 @@ Future<void> main() async {
   }
   runApp(MyApp(initial));
 }
+
+
+
 
 class MyApp extends StatelessWidget {
   String initial;

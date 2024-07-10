@@ -1,41 +1,16 @@
 import 'dart:io';
-/*
 import 'package:device_info/device_info.dart';
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:in_app_review/in_app_review.dart';
-import 'package:intl/intl.dart';
-import 'package:orbitoasia/apis/api_call.dart';
-import 'package:orbitoasia/helper/color.dart';
-import 'package:orbitoasia/helper/dialogs.dart';
-import 'package:orbitoasia/helper/loader.dart';
-import 'package:orbitoasia/helper/session.dart';
-import 'package:orbitoasia/helper/utils.dart';
-import 'package:orbitoasia/models/ClientListResponse.dart';
-import 'package:orbitoasia/models/NearCompanyResponse.dart';
-import 'package:orbitoasia/models/SettingResponse.dart';
-import 'package:orbitoasia/routes/app_routes.dart';
-import 'package:orbitoasia/widgets/box_edittext.dart';
-import 'package:orbitoasia/widgets/button.dart';
-import 'package:package_info/package_info.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
-
-import '../../helper/constants.dart';
-*/
-
-import 'package:device_info/device_info.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info/package_info.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../apis/api_call.dart';
 import '../../models/ApplicationSettingResponse.dart';
@@ -49,6 +24,7 @@ import '../../utils/location_permission.dart';
 import '../../utils/services.dart';
 import '../../utils/session.dart';
 import '../../widgets/custom_button.dart';
+import '../../widgets/custom_dialog.dart';
 
 class HomeController extends GetxController {
   RxString userName = ''.obs,
@@ -58,9 +34,9 @@ class HomeController extends GetxController {
   int customerId = -1;
   String version = '-1';
   String deviceId = '-1';
-  final _box = GetStorage();
+  final box = GetStorage();
   RxList timelines = RxList();
-  RxBool isLoading = false.obs,isCanceled = true.obs;
+  RxBool isLoading = false.obs, isCanceled = true.obs;
 
   late PackageInfo packageInfo;
   Rx<String> currentDate = "".obs;
@@ -71,37 +47,90 @@ class HomeController extends GetxController {
 
   @override
   void onInit() async {
+    final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+    _fcm.requestPermission();
+    String token = await _fcm.getToken() ?? '';
+    debugPrint("FCM token: $token");
+
     super.onInit();
+
     currentDate(DateFormat('MMM dd yyyy').format(DateTime.now()));
     packageInfo = await PackageInfo.fromPlatform();
-    userName(_box.read(Session.firstName) ?? '');
-    userId = _box.read(Session.userid) ?? -1;
-    userImage(_box.read(Session.userImage) ?? '');
-    _box.write(Session.version, packageInfo.version);
+    userName(box.read(Session.firstName) ?? '');
+    userId = box.read(Session.userid) ?? -1;
+    userImage(box.read(Session.userImage) ?? '');
+    box.write(Session.version, packageInfo.version);
     version = packageInfo.version;
-    _box.write(Session.appVersion, version);
+    box.write(Session.appVersion, version);
 
-    //for locations
-    Geolocator.requestPermission();
-    bool _isServiceEnable = await Geolocator.isLocationServiceEnabled();
-    if (!_isServiceEnable) Geolocator.openLocationSettings();
     if (Platform.isAndroid) {
       deviceId = (await deviceInfoPlugin.androidInfo).androidId;
     } else if (Platform.isIOS) {
       deviceId = (await deviceInfoPlugin.iosInfo).identifierForVendor;
     }
-    _box.write(Session.deviceID, deviceId);
+    box.write(Session.deviceID, deviceId);
+  }
+
+  @override
+  Future<void> onReady() async {
     getTimeline();
+    checkLogIn();
+
+    // TODO: implement onReady
+    super.onReady();
+    debugPrint("22222:");
+    backgroundAccess();
+
+    var res = await FlutterBackgroundService().isRunning();
+    debugPrint("running :${res.toString()}");
+    if (res) {
+      showCustomAlertDialog(
+          title: "Background Running",
+          content:
+              "System is running in background do you continue your login or do you logout your session?",
+          confirm: "continue",
+          cancel: "logout",
+          isDismissable: false,
+          onTabConfirm: () {
+            Get.back();
+          },
+          onTabCancel: () {
+            changeStatus(settings.value!);
+          });
+    }
+  }
+
+  backgroundAccess() async {
+    debugPrint("11111:");
+    bool isServiceEnable = await Geolocator.isLocationServiceEnabled();
+    if (!isServiceEnable) {
+      await Geolocator.getCurrentPosition();
+      //await Geolocator.openLocationSettings();
+    }
+    PermissionStatus res =
+        await Permission.ignoreBatteryOptimizations.request();
+
+    debugPrint("res:${res.toString()}");
+
+    // final bool status = await FlutterOverlayWindow.isPermissionGranted();
+    // if (status == false) {
+    //   final bool? status = await FlutterOverlayWindow.requestPermission();
+    // }
+    if (res.isGranted) {
+      return;
+    } else {
+      backgroundAccess(); //await Permission.ignoreBatteryOptimizations.request();
+    }
   }
 
   checkLogIn() {
     var currentDate = showFormat.format(DateTime.now());
-    if (_box.read(Session.logInDate) == null) {
+    if (box.read(Session.logInDate) == null) {
       //variable thevai illa
-      _box.write(Session.logInDate, currentDate);
+      box.write(Session.logInDate, currentDate);
       debugPrint("First Date: $currentDate");
     } else {
-      if (_box.read(Session.logInDate) != currentDate) {
+      if (box.read(Session.logInDate) != currentDate) {
         Get.defaultDialog(
             barrierDismissible: false,
             contentPadding: const EdgeInsets.symmetric(
@@ -132,7 +161,6 @@ class HomeController extends GetxController {
 
   void didChangeAppLifecycleState(AppLifecycleState state) {
     debugPrint("STATE: ${state.toString()}");
-
   }
 
   getTimeline() async {
@@ -158,7 +186,7 @@ class HomeController extends GetxController {
       }
 
       getSettings();
-    }else{
+    } else {
       showToastMsg("Check your internet connection");
     }
   }
@@ -260,15 +288,15 @@ class HomeController extends GetxController {
             speedAccuracy: 0,
             altitudeAccuracy: 0,
             headingAccuracy: 0);
-
       }
-      isCanceled(true); // setting true, because its always true for slider button. if position gives null then only,change to false
+      isCanceled(
+          true); // setting true, because its always true for slider button. if position gives null then only,change to false
       if (position == null) {
-
         isCanceled(false);
 
         return;
-      };
+      }
+      ;
       showLoader(title: 'Update Status');
       //update status
       var params = {
@@ -293,31 +321,64 @@ class HomeController extends GetxController {
       if (response != null) {
         if (response['RtnStatus']) {
           showToastMsg('${response['RtnMessage']}');
-          _box.write(Session.isAutoFetch, status.status.first.statusID);
-          debugPrint("AUTO FETCH:${_box.read(Session.isAutoFetch)}");
-
-          if (_box.read(Session.isAutoFetch) == 1) {
+          box.write(Session.isAutoFetch, status.status.first.statusID);
+          debugPrint("status id: ${box.read(Session.isAutoFetch).toString()}");
+          debugPrint("AUTO FETCH:${box.read(Session.isAutoFetch)}");
+          if (box.read(Session.isAutoFetch) == 1) // 1 is login
+          {
             debugPrint(
-                "AUTO FETCH in foreground:${_box.read(Session.isAutoFetch)}");
+                "AUTO FETCH in foreground:${box.read(Session.isAutoFetch)}");
             var permission = await checkLocationPermission1();
             if (permission == true) {
-              int time = _box.read(Session.serviceTimeInterval) ;
-              debugPrint("Service time in home: ${time.toString()}");
-              await initializeService();
-              if (await FlutterBackgroundService().isRunning()) {
+              var res;
+              try{}catch(e) {
+                debugPrint("ERROR: ${e.toString()}");
+              }
+              res = await FlutterBackgroundService().isRunning();
+              debugPrint("running: 1 :${res.toString()}");
+              if (res) {
+                debugPrint("stop and restart");
                 FlutterBackgroundService().invoke('stopService');
-                if (await FlutterBackgroundService().isRunning()) {
+                res = await FlutterBackgroundService().isRunning();
+                debugPrint("running: 2 :${res.toString()}");
+                if(res ==  false){
+                  await initializeService();
+                  await FlutterBackgroundService().startService();
                   FlutterBackgroundService().invoke('setAsForeground');
-                  _box.write(Session.isRunnerCancelling,true);
+                  /*await Future.delayed(const Duration(seconds:  5));
+                   // Call the second method
+                  res = await FlutterBackgroundService().isRunning();
+                  if(res){
+                    FlutterBackgroundService().invoke('setAsBackground');
+                    debugPrint("Service time in home: ${time.toString()}");
+                  }*/
+                  box.write(Session.isRunnerCancelling, true);
                 }
+              }else{
+                debugPrint("start service");
+                await initializeService();
+                await FlutterBackgroundService().startService();
+                FlutterBackgroundService().invoke('setAsForeground');
+                /*await Future.delayed(const Duration(seconds:  5));
+                   // Call the second method
+                  res = await FlutterBackgroundService().isRunning();
+                  if(res){
+                    FlutterBackgroundService().invoke('setAsBackground');
+                    debugPrint("Service time in home: ${time.toString()}");
+                  }*/
+                box.write(Session.isRunnerCancelling, true);
               }
               //FlutterBackgroundService().invoke('setAsBackground');
             }
-          } else if (_box.read(Session.isAutoFetch) == 2 ) {
-            debugPrint("AUTO FETCH in stop:${_box.read(Session.isAutoFetch)}");
-            if (await FlutterBackgroundService().isRunning()) {
+          } else /*if (box.read(Session.isAutoFetch) == 2)*/ //  2 is logout
+          {
+            debugPrint("stop service");
+            debugPrint("AUTO FETCH in stop:${box.read(Session.isAutoFetch)}");
+            var res = await FlutterBackgroundService().isRunning();
+            debugPrint("running: 4 :${res.toString()}");
+            if (res) {
               FlutterBackgroundService().invoke('stopService');
-              _box.write(Session.isRunnerCancelling,false);
+              box.write(Session.isRunnerCancelling, false);
             }
           }
         } else {
@@ -338,13 +399,13 @@ class HomeController extends GetxController {
         'Are you sure to logout from app.',
         'Logout',
       );
-    } else {  
+    } else {
       resp = true;
     }
 
     if (resp != null && resp) {
       showLoader(title: 'Logging Out');
-      _box.erase();
+      box.erase();
       hideLoader();
       Get.offAllNamed(Routes.mobileLogin);
     }
@@ -366,5 +427,9 @@ class HomeController extends GetxController {
     } catch (e) {
       //ignored
     }
+  }
+
+  showChatHead() async {
+    await FlutterOverlayWindow.showOverlay();
   }
 }

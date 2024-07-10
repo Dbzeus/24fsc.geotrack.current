@@ -555,9 +555,8 @@ class DashboardScreen extends GetView<DashboardController> {
                                                 ),
                                                 Obx(
                                                   () => Text(
-                                                    controller.data.value!
-                                                        .dateDetails.first.km
-                                                        .toString(),
+                                                    "${controller.data.value!
+                                                        .dateDetails.first.km} km",
                                                     style: const TextStyle(
                                                       fontSize: 12,
                                                       color: blackColor,

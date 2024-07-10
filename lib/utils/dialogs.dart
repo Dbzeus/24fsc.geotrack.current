@@ -134,7 +134,7 @@ Future<String?> showImageOptionDialog() async {
                       } else {}
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black,
+                      backgroundColor: Colors.black,
                     ),
                     child: const Text(
                       'Camera',
@@ -166,7 +166,7 @@ Future<String?> showImageOptionDialog() async {
                       } else {}
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: primaryColor,
+                      backgroundColor: primaryColor,
                     ),
                     child: const Text('Gallery',
                         style: TextStyle(
