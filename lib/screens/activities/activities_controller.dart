@@ -12,6 +12,7 @@ import '../../apis/api_call.dart';
 import '../../helpers/colors.dart';
 import '../../models/DashboardResponse.dart';
 import '../../models/emp_lat_lng.dart';
+import '../../models/staff_report_response.dart';
 import '../../utils/constants.dart';
 import '../../utils/session.dart';
 
@@ -27,6 +28,7 @@ class ActivitiesController extends GetxController {
   DateTime selected = DateTime.now();
   final _box = GetStorage();
 
+  StaffReportData? argData;
   Rx<CameraPosition> initialLocation =
       Rx(const CameraPosition(target: LatLng(12.971599, 77.594566), zoom: 10));
 
@@ -43,14 +45,28 @@ class ActivitiesController extends GetxController {
 
   @override
   void onInit() async {
+    debugPrint("No data");
     super.onInit();
+    if(Get.arguments == null){
 
-    selectedMonth(showFormat.format(DateTime.now()));
-    isSelectedDate(int.parse(DateTime.now().day.toString()));
-    daysInMonth.value = DateUtils.getDaysInMonth(now.year, now.month);
-    days.value = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
-    userId = _box.read(Session.userid) ?? -1;
-    getDashboard(date: DateTime.now().toString().split(" ")[0]);
+      selectedMonth(showFormat.format(DateTime.now()));
+      isSelectedDate(int.parse(DateTime.now().day.toString()));
+      daysInMonth.value = DateUtils.getDaysInMonth(now.year, now.month);
+      userId = _box.read(Session.userid) ?? -1;
+      days.value = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
+      getDashboard(date: DateTime.now().toString().split(" ")[0]);
+    }else{
+
+      argData = Get.arguments["data"];
+      userId = argData!.userID;
+      selected= Get.arguments['date'] ;
+      isSelectedDate(selected.day);
+      selectedMonth(showFormat.format(selected));
+      daysInMonth.value = DateUtils.getDaysInMonth(selected.year, selected.month);
+      days.value = getAllDaysInMonth(selected.year, selected.month);
+      getDashboard(date: selected.toString().split(" ")[0]);
+    }
+
   }
 
   void onMapCreated(GoogleMapController controller) {}

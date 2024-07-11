@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geotrack24fsc/screens/reports/create_report/create_report_controller.dart';
 import 'package:get/get.dart';
+import 'package:record/record.dart';
 
 import '../../../helpers/colors.dart';
 import '../../../widgets/custom_button.dart';
@@ -212,9 +213,13 @@ class CreateReportScreen extends GetView<CreateReportController> {
                                   children: [
                                     InkWell(
                                         onTap: () async {
-                                          controller.isRecordStarted.value
-                                              ? controller.stopRecord()
-                                              : controller.startRecord();
+                                          var res=await AudioRecorder().hasPermission();
+                                          if(res) {
+                                            controller.isRecordStarted.value
+                                                ? controller.stopRecord()
+                                                : controller.startRecord();
+                                          }
+
                                         },
                                         child: Container(
                                           width: 60,

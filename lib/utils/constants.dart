@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 showToastMsg(String msg) {
@@ -40,3 +41,14 @@ showSnackbar(String? title, String? msg, {Color? tcolor}) {
   Get.snackbar(title ?? 'Something Wrong', msg ?? '',
       snackPosition: SnackPosition.BOTTOM, colorText: tcolor ?? Colors.black);
 }
+
+
+call(String mobileno) async {
+  if (mobileno.length < 10) return;
+  final Uri launchUri = Uri(
+    scheme: 'tel',
+    path: mobileno,
+  );
+  await launchUrl(launchUri);
+}
+

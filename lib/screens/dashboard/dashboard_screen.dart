@@ -68,7 +68,7 @@ class DashboardScreen extends GetView<DashboardController> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12.0, vertical: 16),
+                                horizontal: 12.0, vertical: 8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -103,7 +103,7 @@ class DashboardScreen extends GetView<DashboardController> {
                               ],
                             ),
                           ),
-                          Container(
+                         controller.argData ==null? Container(
                             width: Get.width,
                             padding: const EdgeInsets.all(8),
                             margin:
@@ -280,7 +280,7 @@ class DashboardScreen extends GetView<DashboardController> {
                                       ],
                                     ),
                             ),
-                          ),
+                          ) : const SizedBox.shrink(),
                           const SizedBox(
                             height: 8,
                           ),

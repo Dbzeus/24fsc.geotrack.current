@@ -117,26 +117,16 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                   CustomButton(
                       text: "verify",
                       onTap: () async {
-
-                       // await notificationPermission();
-                        var res=await AudioRecorder().hasPermission();
-                        var permission = await checkLocationPermission1();
-                        if(permission ==true){
+                        var res= await checkLocationPermission1();
+                        if(res){
                           controller.login();
                         }else{
-                          var permission = await checkLocationPermission1();
-                          if(permission ==true){
+                          var res= await checkLocationPermission1();
+                          if(res){
                             controller.login();
                           }
                         }
 
-                       /* var permission = await checkLocationPermission1();
-                        if (permission == true) {
-
-
-                          //await initializeService();
-                          //FlutterBackgroundService().invoke('setAsForeground');
-                        }*/
                       }),
 
                   /* const SizedBox(

@@ -246,7 +246,7 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: controller.argData == null ? FloatingActionButton(
         onPressed: () async {
           var res = await Get.toNamed(Routes.createReport);
           if (res != null && res == true) {
@@ -260,7 +260,7 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
           size: 30,
           color: whiteColor,
         ),
-      ),
+      ):const SizedBox.shrink(),
     );
   }
 

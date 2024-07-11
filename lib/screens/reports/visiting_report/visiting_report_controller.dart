@@ -10,6 +10,7 @@ import 'package:mat_month_picker_dialog/mat_month_picker_dialog.dart';
 
 import '../../../apis/api_call.dart';
 import '../../../helpers/colors.dart';
+import '../../../models/staff_report_response.dart';
 import '../../../utils/constants.dart';
 
 class VisitingReportController extends GetxController {
@@ -23,7 +24,7 @@ class VisitingReportController extends GetxController {
   DateFormat dateFormat = DateFormat('dd-MM-yyyy');
   DateTime selected = DateTime.now();
   int userId = -1;
-
+  StaffReportData? argData;
   RxList data = RxList();
 
   final player = AudioPlayer();
@@ -41,12 +42,24 @@ class VisitingReportController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    selectedMonth(showFormat.format(DateTime.now()));
-    isSelectedDate(int.parse(DateTime.now().day.toString()));
-    daysInMonth.value = DateUtils.getDaysInMonth(now.year, now.month);
-    days.value = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
-    userId = box.read(Session.userid) ?? -1;
-    getVisitingReport(date: DateTime.now().toString().split(" ")[0]);
+    if(Get.arguments == null){
+      selectedMonth(showFormat.format(DateTime.now()));
+      isSelectedDate(int.parse(DateTime.now().day.toString()));
+      daysInMonth.value = DateUtils.getDaysInMonth(now.year, now.month);
+      days.value = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
+      userId = box.read(Session.userid) ?? -1;
+      getVisitingReport(date: DateTime.now().toString().split(" ")[0]);
+    }else{
+      argData = Get.arguments["data"];
+      userId = argData!.userID;
+      selected= Get.arguments['date'] ;
+      isSelectedDate(selected.day);
+      selectedMonth(showFormat.format(selected));
+      daysInMonth.value = DateUtils.getDaysInMonth(selected.year, selected.month);
+      days.value = getAllDaysInMonth(selected.year, selected.month);
+      getVisitingReport(date: selected.toString().split(" ")[0]);
+    }
+
   }
 
   List<DateTime> getAllDaysInMonth(int year, int month) {

@@ -24,6 +24,7 @@ import '../models/NearCompanyResponse.dart';
 import '../models/OtListResponse.dart';
 import '../models/OutstationListResponse.dart';
 
+import '../models/PerformanceReport.dart';
 import '../models/emp_lat_lng.dart';
 import '../models/leave_list_response.dart';
 import '../models/notification_response.dart';
@@ -609,19 +610,19 @@ class ApiCall {
     }
   }
 
-  Future<AttritionListResponse?> getAttritionList(
+  Future<PerformanceReport?> getAttritionList(
       String userid, String fdate) async {
     var params = {"UserID": userid, "ReportDate": fdate};
 
     log('${_dio.options.baseUrl} $ATTRITION_URL');
-    final response = await _dio.post(ATTRITION_URL, queryParameters: params);
+    final response = await _dio.get(ATTRITION_URL, queryParameters: params);
 
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 
     if ((response.statusCode ?? -1) >= 205) {
       return null;
     } else {
-      return AttritionListResponse.fromJson(response.data);
+      return PerformanceReport.fromJson(response.data);
     }
   }
 
@@ -631,7 +632,7 @@ class ApiCall {
 
     log('${_dio.options.baseUrl} $ATTRITION_REPORT_URL');
     final response =
-        await _dio.post(ATTRITION_REPORT_URL, queryParameters: params);
+        await _dio.get(ATTRITION_REPORT_URL, queryParameters: params);
 
     log('response ${response.requestOptions.path} ${response.statusCode} ${response.data}');
 

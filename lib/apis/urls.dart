@@ -49,8 +49,8 @@ const UPDATE_CUSTOMER_URL = "Master/UpdateCustomerLatLng";
 const FEEDBACK_URL = "SupportDesk/GetTicketFeedback";
 const FEEDBACK_TICKET_URL = "SupportDesk/TicketFeedback";
 //attrition
-const ATTRITION_URL = "AdminAPI/AttritionReport";
-const ATTRITION_REPORT_URL = "AdminAPI/AttritionReportDetails";
+const ATTRITION_URL = "Report/AttandanceReport";
+const ATTRITION_REPORT_URL = "Report/AttandanceReportDetails";
 
 //orbito new
 const CREATE_CLIENT_URL = "Master/InsertUpdateCustomer";

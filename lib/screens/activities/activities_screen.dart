@@ -259,18 +259,20 @@ class ActivitiesScreen extends GetView<ActivitiesController> {
                                         const SizedBox(
                                           height: 4,
                                         ),
-                                        Text(
-                                          controller
-                                              .data
-                                              .value!
-                                              .dateDetails
-                                              .first
-                                              .loginTime
-                                              .toString(),
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: secondaryColor,
-                                            fontWeight: FontWeight.bold,
+                                        Obx(()=>
+                                           Text(
+                                            controller
+                                                .data
+                                                .value!
+                                                .dateDetails
+                                                .first
+                                                .loginTime
+                                                .toString(),
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color: secondaryColor,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ],

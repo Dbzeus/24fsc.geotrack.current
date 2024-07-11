@@ -12,19 +12,6 @@ import '../apis/api_call.dart';
 import 'location_permission.dart';
 
 //@pragma('vm:entry-point',true)
-Future<void> initializeService() async {
-  //serviceTime = time;
-  final service = FlutterBackgroundService();
-  await service.configure(
-      iosConfiguration: IosConfiguration(
-          // this will be executed when app is in foreground in separated isolate
-          onForeground: onStart
-          // you have to enable background fetch capability on xcode project
-          ),
-      androidConfiguration: AndroidConfiguration(
-          isForegroundMode: true, autoStart: true, onStart: onStart));
-  //service.startService();
-}
 
 @pragma('vm:entry-point',true)
 Future<void> onStart(ServiceInstance serviceInstance) async {
@@ -33,8 +20,8 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
   if (serviceInstance is AndroidServiceInstance) {
     serviceInstance.on('setAsForeground').listen((event) {
       serviceInstance.setAsForegroundService();
-    });
-
+    },
+    );
     serviceInstance.on('setAsBackground').listen((event) {
       serviceInstance.setAsBackgroundService();
     });
@@ -47,11 +34,9 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
   int time = await box.read(Session.serviceTimeInterval) /*?? 10*/;
   String Autologouttime = await box.read(Session.autoLogoutTime) /*?? 10*/;
   debugPrint("Service time in service: ${time.toString()}");
-  Timer.periodic(Duration(minutes: 1), (timer) async {
+  Timer.periodic(Duration(minutes: time), (timer) async {
     if (serviceInstance is AndroidServiceInstance) {
       if (await serviceInstance.isForegroundService()) {
-
-
         //debugPrint("foreground service is running");
         /*await FlutterLocalNotificationsPlugin().show(1, "24FSC", "App is running....",const NotificationDetails(
           android: AndroidNotificationDetails(
@@ -86,7 +71,7 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
       if (box.read(Session.isRunnerCancelling) != null) {
         if (box.read(Session.isRunnerCancelling) == true) {
           // debugPrint("ABCD3");
-          var res = await backgroundLocationService("4");
+          var res = await backgroundLocationService("6"); //auto logout
           if (res == true) {
             // debugPrint("ABCD4");
             box.write(Session.isRunnerCancelling, false);
@@ -116,11 +101,11 @@ backgroundLocationService(String status) async {
     // debugPrint("ABCD Status id: ${status.toString()}");
     var params = {
       "UserID": box.read(Session.userid).toString(),
-      "StatusID": position != null ? status : "3", //for missed slot
+      "StatusID": position != null ? status : "3", //auto fetch
       "Latitude": position != null ? '${position.latitude}' : 0,
       "Longitude": position != null ? '${position.longitude}' : 0,
       "MVersion": box.read(Session.version).toString() ?? "",
-      "Battery": "",
+      "Battery": DateTime.now().toString().split(" ")[1].substring(0,5)??"00",
       "DeviceID": box.read(Session.deviceID).toString() ?? "",
       "ClientID": 0,
       "SessionID": 0,

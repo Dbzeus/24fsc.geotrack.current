@@ -55,12 +55,14 @@ class MobileLoginController extends GetxController {
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
+
   @override
   void onInit() async {
     super.onInit();
     packageInfo = await PackageInfo.fromPlatform();
     _box.write(Session.version, packageInfo.version);
     appVersion('App Version ${packageInfo.version}');
+    await checkLocationPermission1();
     /*backgroundAccess();
     bool? isAutoStartEnabled =
         await DisableBatteryOptimization.isAutoStartEnabled;
@@ -108,27 +110,7 @@ class MobileLoginController extends GetxController {
     }
   }
 
-  backgroundAccess() async {
 
-    bool isServiceEnable = await Geolocator.isLocationServiceEnabled();
-    if (!isServiceEnable) {
-      await Geolocator.getCurrentPosition();
-      //await Geolocator.openLocationSettings();
-    }
-    PermissionStatus res =
-    await Permission.ignoreBatteryOptimizations.request();
-    debugPrint("PermissionStatus:$res");
-
-    // final bool status = await FlutterOverlayWindow.isPermissionGranted();
-    // if (status == false) {
-    //   final bool? status = await FlutterOverlayWindow.requestPermission();
-    // }
-    if (res.isGranted) {
-      return;
-    } else {
-      backgroundAccess();//await Permission.ignoreBatteryOptimizations.request();
-    }
-  }
 
   Future<Map<String, dynamic>> _readAndroidBuildData(
       AndroidDeviceInfo build) async {

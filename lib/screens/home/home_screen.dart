@@ -9,6 +9,7 @@ import 'package:slider_button/slider_button.dart';
 
 import '../../routes/app_routes.dart';
 import '../../utils/services.dart';
+import '../../utils/session.dart';
 import 'history.dart';
 import 'home_controller.dart';
 
@@ -95,20 +96,37 @@ class HomeScreen extends GetView<HomeController> {
                           ),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () async {},
-                        child: Container(
-                          width: 60,
-                          height: 50,
-                          decoration: BoxDecoration(
-                              color: whiteColor,
-                              borderRadius: BorderRadius.circular(16),
-                              image: const DecorationImage(
-                                  fit: BoxFit.contain,
-                                  image: const AssetImage(
-                                    "assets/logo/24FSC.png",
-                                  ))),
-                        ),
+                      Column(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {},
+                            child: Container(
+                              width: 60,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  color: whiteColor,
+                                  borderRadius: BorderRadius.circular(16),
+                                  image: const DecorationImage(
+                                      fit: BoxFit.contain,
+                                      image: const AssetImage(
+                                        "assets/logo/24FSC.png",
+                                      ))),
+                            ),
+                          ),
+                          const SizedBox(height: 4,),
+                          Obx(
+                                () => Text(
+                              "version: ${controller.version.value}",
+                              maxLines: 1,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w600,
+                                color: whiteColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -197,7 +215,9 @@ class HomeScreen extends GetView<HomeController> {
                                       width: 4,
                                     ),
                                     GestureDetector(
-                                      onTap: () async {},
+                                      onTap: () async {
+
+                                      },
                                       child: const Icon(
                                         Icons.circle_notifications,
                                         size: 34,

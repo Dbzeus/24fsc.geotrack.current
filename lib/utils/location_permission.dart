@@ -52,14 +52,18 @@ Future<bool> checkLocationPermission1() async {
     return true;
   } else {
     Get.defaultDialog(
-        title: "Alert",
-        middleText: "Please allow all the time in location permission. ",
+        title: "Allow permission for Location and Battery usage ",
+        titleStyle: const TextStyle(
+            color: secondaryColor, fontSize: 14, fontWeight: FontWeight.bold,
+        ),
+        middleText:
+            "${"1.Permissions -> Location -> Allow All the time."} \n${"2.Battery -> Dont optimise (OR) Allow background activity"}",
+
         confirm: CustomButton(
             text: "Settings",
             onTap: () {
               Get.back();
               openAppSettings();
-
             }));
     return false;
   }
@@ -174,7 +178,6 @@ Future<Position?> getLocation({bool showMap = true}) async {
         backgroundColor: whiteColor,
         enableDrag: false,
         isDismissible: false,
-
       );
     }
     return data;
