@@ -24,10 +24,8 @@ import '../../utils/constants.dart';
 import '../../utils/dialogs.dart';
 import '../../utils/loader.dart';
 import '../../utils/location_permission.dart';
-import '../../utils/services.dart';
 import '../../utils/session.dart';
 import '../../widgets/custom_button.dart';
-import '../../widgets/custom_dialog.dart';
 
 class HomeController extends GetxController {
   RxString userName = ''.obs,
@@ -228,170 +226,175 @@ class HomeController extends GetxController {
   }
 
   changeStatus(ApplicationSettingResponseData status) async {
-    if (await isNetConnected()) {
-      showLoader(title: 'Load Setting');
-      await getSettings();
-      hideLoader();
-      bool isSuccess = true;
-      if (settings.value == null) return;
-      if (settings.value!.applicationSetting.first.devicechecking &&
-          settings.value!.applicationSetting.first.deviceID != deviceId) {
-        //show Another device login so logout pls with bottom sheet
-        showModalBottomSheet(
-            context: Get.context!,
-            isDismissible: false,
-            enableDrag: false,
-            shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(8),
-              topRight: Radius.circular(8),
-            )),
-            builder: (context) {
-              return WillPopScope(
-                onWillPop: () async {
-                  return false;
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  margin: const EdgeInsets.all(8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'Another Device Login',
-                        style: TextStyle(
-                          color: secondaryColor,
-                        ),
-                      ),
-                      const Divider(),
-                      CustomButton(
-                        text: 'Logout',
-                        onTap: () {
-                          appLogout(isHaveDialog: false);
-                        },
-                      ),
-                      const SizedBox(
-                        height: 16,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            });
-        return;
-      }
-
-      bool isCorrectStatus = settings.value!.status
-          .any((element) => element.statusID == status.status.first.statusID);
-      if (!isCorrectStatus) {
-        showToastMsg('Your\'e not able to ${status.status.first.geoStatus}');
-        return;
-      }
-      var position;
-      if (status.status.first.isLocationRequired) {
-        showLoader(title: "Getting Location");
-        position = await getCurrentLocation();
-        debugPrint("Position: ${position.toString()}");
+    try{
+      if (await isNetConnected()) {
+        showLoader(title: 'Load Setting');
+        await getSettings();
         hideLoader();
-      } else {
-        position = Position(
-            longitude: 0,
-            latitude: 0,
-            timestamp: DateTime.timestamp(),
-            accuracy: 0,
-            altitude: 0,
-            heading: 0,
-            speed: 0,
-            speedAccuracy: 0,
-            altitudeAccuracy: 0,
-            headingAccuracy: 0);
-      }
-      isCanceled(
-          true); // setting true, because its always true for slider button. if position gives null then only,change to false
-      if (position == null) {
-        isCanceled(false);
-        return;
-      }
-      showLoader(title: 'Update Status');
-      //update status
-      var params = {
-        "UserID": '$userId',
-        "StatusID": '${status.status.first.statusID}',
-        "Latitude": '${position.latitude}',
-        "Longitude": '${position.longitude}',
-        "MVersion": version.value,
-        "Battery": "",
-        "DeviceID": deviceId,
-        "ClientID": 0,
-        "SessionID": 0,
-        "StatusAddress": "demo",
-        "Distance": 0,
-        "SelfiyImage": "",
-        "isOnLocation": isSuccess,
-      };
-      var response = await ApiCall().updateStatus(params);
-      hideLoader();
-      if (response != null) {
-        if (response['RtnStatus']) {
-          showToastMsg('${response['RtnMessage']}');
-          box.write(Session.isAutoFetch, status.status.first.statusID);
-          debugPrint("status id: ${box.read(Session.isAutoFetch).toString()}");
-          debugPrint("AUTO FETCH:${box.read(Session.isAutoFetch)}");
-          if (int.parse(box.read(Session.isAutoFetch)) == 1) // 1 is login
-          {
-            debugPrint(
-                "AUTO FETCH in foreground:${box.read(Session.isAutoFetch)}");
-            var permission = await checkLocationPermission1();
-            if (permission == true) {
-              var res;
-              res = await FlutterBackgroundService().isRunning();
-              debugPrint("running: 1 :${res.toString()}");
-              if (res) {
-                debugPrint("stop and restart");
-                FlutterBackgroundService().invoke('stopService');
+        bool isSuccess = true;
+        if (settings.value == null) return;
+        if (settings.value!.applicationSetting.first.devicechecking &&
+            settings.value!.applicationSetting.first.deviceID != deviceId) {
+          //show Another device login so logout pls with bottom sheet
+          showModalBottomSheet(
+              context: Get.context!,
+              isDismissible: false,
+              enableDrag: false,
+              shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8),
+                  )),
+              builder: (context) {
+                return WillPopScope(
+                  onWillPop: () async {
+                    return false;
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.all(8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Another Device Login',
+                          style: TextStyle(
+                            color: secondaryColor,
+                          ),
+                        ),
+                        const Divider(),
+                        CustomButton(
+                          text: 'Logout',
+                          onTap: () {
+                            appLogout(isHaveDialog: false);
+                          },
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              });
+          return;
+        }
+
+        bool isCorrectStatus = settings.value!.status
+            .any((element) => element.statusID == status.status.first.statusID);
+        if (!isCorrectStatus) {
+          showToastMsg('Your\'e not able to ${status.status.first.geoStatus}');
+          return;
+        }
+        var position;
+        if (status.status.first.isLocationRequired) {
+          showLoader(title: "Getting Location");
+          position = await getCurrentLocation();
+          debugPrint("Position: ${position.toString()}");
+          hideLoader();
+        } else {
+          position = Position(
+              longitude: 0,
+              latitude: 0,
+              timestamp: DateTime.timestamp(),
+              accuracy: 0,
+              altitude: 0,
+              heading: 0,
+              speed: 0,
+              speedAccuracy: 0,
+              altitudeAccuracy: 0,
+              headingAccuracy: 0);
+        }
+        isCanceled(true); // setting true, because its always true for slider button. if position gives null then only,change to false
+        if (position == null) {
+          isCanceled(false);
+          return;
+        }
+
+        showLoader(title: 'Update Status');
+        //update status
+        var params = {
+          "UserID": '$userId',
+          "StatusID": '${status.status.first.statusID}',
+          "Latitude": '${position.latitude}',
+          "Longitude": '${position.longitude}',
+          "MVersion": version.value,
+          "Battery": "",
+          "DeviceID": deviceId,
+          "ClientID": 0,
+          "SessionID": 0,
+          "StatusAddress": "demo",
+          "Distance": 0,
+          "SelfiyImage": "",
+          "isOnLocation": isSuccess,
+        };
+        var response = await ApiCall().updateStatus(params);
+        hideLoader();
+        if (response != null) {
+          if (response['RtnStatus']) {
+            showToastMsg('${response['RtnMessage']}');
+            box.write(Session.isAutoFetch, status.status.first.statusID.toString());
+            // debugPrint("status id: ${box.read(Session.isAutoFetch).toString()}");
+            // debugPrint("AUTO FETCH:${box.read(Session.isAutoFetch)}");
+            if (int.parse(box.read(Session.isAutoFetch)) == 1) // 1 is login
+                {
+              // debugPrint(
+              //     "AUTO FETCH in foreground:${box.read(Session.isAutoFetch)}");
+              var permission = await checkLocationPermission1();
+              if (permission == true) {
+                var res;
                 res = await FlutterBackgroundService().isRunning();
-                debugPrint("running: 2 :${res.toString()}");
-                if (res == false) {
-                  await initializeService();
-                  FlutterBackgroundService().invoke('setAsForeground');
-                  /*await Future.delayed(const Duration(seconds:  5));
+                // debugPrint("running: 1 :${res.toString()}");
+                if (res) {
+                  // debugPrint("stop and restart");
+                  FlutterBackgroundService().invoke('stopService');
+                  res = await FlutterBackgroundService().isRunning();
+                  // debugPrint("running: 2 :${res.toString()}");
+                  if (res == false) {
+                    await initializeService();
+                    FlutterBackgroundService().invoke('setAsForeground');
+                    /*await Future.delayed(const Duration(seconds:  5));
                    // Call the second method
                   res = await FlutterBackgroundService().isRunning();
                   if(res){
                     FlutterBackgroundService().invoke('setAsBackground');
                     debugPrint("Service time in home: ${time.toString()}");
                   }*/
+                    box.write(Session.isRunnerCancelling, true);
+                  }
+                } else {
+                  // debugPrint("start service");
+                  await initializeService();
+                  FlutterBackgroundService().invoke('setAsForeground');
                   box.write(Session.isRunnerCancelling, true);
                 }
-              } else {
-                debugPrint("start service");
-                await initializeService();
-                FlutterBackgroundService().invoke('setAsForeground');
-
-                box.write(Session.isRunnerCancelling, true);
+                //FlutterBackgroundService().invoke('setAsBackground');
               }
-              //FlutterBackgroundService().invoke('setAsBackground');
+            } else
+              /*if (int.parse(box.read(Session.isAutoFetch)) == 2)*/ //  2 is logout
+                {
+              debugPrint("stop service");
+              debugPrint("AUTO FETCH in stop:${box.read(Session.isAutoFetch)}");
+              var res = await FlutterBackgroundService().isRunning();
+              debugPrint("running: 4 :${res.toString()}");
+              if (res) {
+                FlutterBackgroundService().invoke('stopService');
+                box.write(Session.isRunnerCancelling, false);
+              }
             }
-          } else
-          /*if (int.parse(box.read(Session.isAutoFetch)) == 2)*/ //  2 is logout
-          {
-            debugPrint("stop service");
-            debugPrint("AUTO FETCH in stop:${box.read(Session.isAutoFetch)}");
-            var res = await FlutterBackgroundService().isRunning();
-            debugPrint("running: 4 :${res.toString()}");
-            if (res) {
-              FlutterBackgroundService().invoke('stopService');
-              box.write(Session.isRunnerCancelling, false);
-            }
+
+          } else {
+            showAlert(
+                'Status Update Failed!', '${response['RtnMessage']}', 'Okay',
+                isOneButton: true);
           }
-        } else {
-          showAlert(
-              'Status Update Failed!', '${response['RtnMessage']}', 'Okay',
-              isOneButton: true);
+          getTimeline();
         }
-        getTimeline();
       }
+    }catch(e){
+      debugPrint("ERROR:${e.toString()}");
     }
+
   }
 
   void appLogout({bool? isHaveDialog}) async {

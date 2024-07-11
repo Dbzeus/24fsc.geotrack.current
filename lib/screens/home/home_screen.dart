@@ -3,6 +3,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:geotrack24fsc/helpers/colors.dart';
+import 'package:geotrack24fsc/utils/constants.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:slider_button/slider_button.dart';
@@ -113,9 +114,11 @@ class HomeScreen extends GetView<HomeController> {
                                       ))),
                             ),
                           ),
-                          const SizedBox(height: 4,),
+                          const SizedBox(
+                            height: 4,
+                          ),
                           Obx(
-                                () => Text(
+                            () => Text(
                               "version: ${controller.version.value}",
                               maxLines: 1,
                               textAlign: TextAlign.center,
@@ -215,9 +218,7 @@ class HomeScreen extends GetView<HomeController> {
                                       width: 4,
                                     ),
                                     GestureDetector(
-                                      onTap: () async {
-
-                                      },
+                                      onTap: () async {},
                                       child: const Icon(
                                         Icons.circle_notifications,
                                         size: 34,
@@ -309,7 +310,6 @@ class HomeScreen extends GetView<HomeController> {
                             .changeStatus(controller.settings.value!);
 
                         ///Do something here OnSlide
-
                         return controller.isCanceled.value;
                       },
                       backgroundColor: whiteColor,
