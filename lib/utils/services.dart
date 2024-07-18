@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_background_service_android/flutter_background_service_android.dart';
 import 'package:geotrack24fsc/utils/session.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
-
 import '../apis/api_call.dart';
 import 'location_permission.dart';
 
@@ -16,7 +14,6 @@ import 'location_permission.dart';
 @pragma('vm:entry-point',true)
 Future<void> onStart(ServiceInstance serviceInstance) async {
   DartPluginRegistrant.ensureInitialized();
-
   if (serviceInstance is AndroidServiceInstance) {
     serviceInstance.on('setAsForeground').listen((event) {
       serviceInstance.setAsForegroundService();

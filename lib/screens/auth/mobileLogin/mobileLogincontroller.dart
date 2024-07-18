@@ -52,17 +52,23 @@ class MobileLoginController extends GetxController {
   String token = "";
   var info;
   final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-
-
   @override
   void onInit() async {
     super.onInit();
     packageInfo = await PackageInfo.fromPlatform();
     _box.write(Session.version, packageInfo.version);
     appVersion('App Version ${packageInfo.version}');
-    await checkLocationPermission1();
+    var res1 = await Permission.locationAlways.isGranted;
+    debugPrint("REsult1: ${res1.toString()}");
+    if (res1 == false) { // false is status is not granted
+       await checkLocationPermission1();
+    }
+    var res = await Permission.ignoreBatteryOptimizations.isGranted;
+    debugPrint("REsult: ${res.toString()}");
+    if (res == false) {
+      await checkBatteryOptimisation();
+    }
     /*backgroundAccess();
     bool? isAutoStartEnabled =
         await DisableBatteryOptimization.isAutoStartEnabled;
@@ -109,8 +115,6 @@ class MobileLoginController extends GetxController {
       info = await _readIosBuildData(await deviceInfoPlugin.iosInfo);
     }
   }
-
-
 
   Future<Map<String, dynamic>> _readAndroidBuildData(
       AndroidDeviceInfo build) async {

@@ -182,13 +182,7 @@ class HomeScreen extends GetView<HomeController> {
                                     GestureDetector(
                                       onTap: () async {
                                         controller.getTimeline();
-                                        /*var res = await FlutterBackgroundService().isRunning();
-                                        if(res && controller
-                                            .settings.value?.status.first.statusID == 2)//2 is logout
-                                           {
-                                          debugPrint("fdgdfgdf");
-                                          backgroundLocationService("4"); //manual update
-                                        }*/
+
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(

@@ -32,6 +32,8 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:label="geotrack24fsc"
+        android:allowBackup="false"
+        android:fullBackupOnly="false"
         tools:replace="android:label">
         <activity
             android:name=".MainActivity"

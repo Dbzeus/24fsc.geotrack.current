@@ -1,3 +1,4 @@
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geotrack24fsc/helpers/colors.dart';
@@ -51,22 +52,45 @@ Future<bool> checkLocationPermission1() async {
     }*/
     return true;
   } else {
-    Get.defaultDialog(
-        title: "Allow permission for Location and Battery usage ",
+    await Get.defaultDialog(
+        title: "Allow permission for Location ",
+        /*and Battery usage */
         titleStyle: const TextStyle(
-            color: secondaryColor, fontSize: 14, fontWeight: FontWeight.bold,
+          color: secondaryColor,
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
         ),
-        middleText:
-            "${"1.Permissions -> Location -> Allow All the time."} \n${"2.Battery -> Dont optimise (OR) Allow background activity"}",
-
+        middleText: "${"1.Permissions -> Location -> Allow All the time."} ",
+        /*\n${"2.Battery -> Dont optimise (OR) Allow background activity"}*/
         confirm: CustomButton(
             text: "Settings",
             onTap: () {
               Get.back();
               openAppSettings();
             }));
+
     return false;
   }
+}
+
+Future<bool> checkBatteryOptimisation() async {
+  await Get.defaultDialog(
+      title: "Allow permission for Battery usage ",
+      titleStyle: const TextStyle(
+        color: secondaryColor,
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+      ),
+      middleText:
+          "${"1.Battery -> Dont optimise (OR) Allow background activity"}",
+      confirm: CustomButton(
+          text: "Settings",
+          onTap: () {
+            Get.back();
+            AppSettings.openAppSettings(type: AppSettingsType.settings);
+          }));
+
+  return false;
 }
 
 Future<bool> locationService() async {
