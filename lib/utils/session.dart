@@ -29,6 +29,7 @@ class Session {
   static const String userPhone = "userPhone";
   static const String branchId = "branchId";
   static const String customerId = "customerId";
+  static const String empId = "empId";
   static const String branchName = "branchName";
   static const String roleId = "roleId";
   static const String roleName = "roleName";

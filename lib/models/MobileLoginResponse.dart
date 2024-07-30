@@ -118,6 +118,7 @@ class RtnData {
     isMarketing = json['IsMarketing'];
     isILT = json['IsILT'];
     customerID = json['CustomerID'];
+    empId = json['EmployeeID'];
     timeInterval = json['TimeInterval'];
     autoLogoutTime = json['Autologouttime'];
   }
@@ -144,6 +145,7 @@ class RtnData {
   late bool isMarketing;
   late bool isILT;
   late int customerID;
+  late int empId;
   late int timeInterval;
   late String autoLogoutTime;
 
@@ -172,6 +174,7 @@ class RtnData {
     map['IsMarketing'] = isMarketing;
     map['IsILT'] = isILT;
     map['CustomerID'] = customerID;
+     map['EmployeeID']=empId;
     map['TimeInterval'] = timeInterval;
     map['Autologouttime'] = autoLogoutTime;
     return map;

@@ -269,13 +269,33 @@ class EmployeeReportScreen extends GetView<EmployeeReportController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            data.firstName,
-            style: const TextStyle(
-              fontSize: 12,
-              color: primaryColor,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                data.firstName,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: primaryColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color:
+                  data.isLogin ? primaryColor.withAlpha(100) : Colors.red,
+                ),
+                child: Center(
+                  child: Text(data.isLogin ? "Present" : "Absent",
+                      style: TextStyle(
+                          fontSize: 8,
+                          color: data.isLogin ? blackColor : whiteColor,
+                          fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
           ),
           const SizedBox(
             height: 4,
@@ -326,7 +346,7 @@ class EmployeeReportScreen extends GetView<EmployeeReportController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
+              data.isLogin ? Row(
                 children: [
                   const Icon(
                     Icons.timer_outlined,
@@ -344,27 +364,13 @@ class EmployeeReportScreen extends GetView<EmployeeReportController> {
                     ),
                   ),
                 ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color:
-                      data.isLogin ? primaryColor.withAlpha(100) : Colors.red,
-                ),
-                child: Center(
-                  child: Text(data.isLogin ? "Present" : "Absent",
-                      style: TextStyle(
-                          fontSize: 8,
-                          color: data.isLogin ? blackColor : whiteColor,
-                          fontWeight: FontWeight.bold)),
-                ),
-              ),
+              ) : const SizedBox.shrink(),
+
             ],
           ),
-          const SizedBox(
+          data.isLogin ?const SizedBox(
             height: 8,
-          ),
+          ):const SizedBox(),
           data.isLogin
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -378,17 +384,30 @@ class EmployeeReportScreen extends GetView<EmployeeReportController> {
                         Get.toNamed(Routes.activities, arguments: body);
                       },
                       child: Container(
-                        height: 60,
+                        height: 65,
                         width: 90,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: fillColor,
                         ),
                         child: Center(
-                          child: SvgPicture.asset(
-                            "assets/menu/activity.svg",
-                            color: secondaryColor,
-                            fit: BoxFit.scaleDown,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/menu/activity.svg",
+                                color: secondaryColor,
+                                fit: BoxFit.scaleDown,
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              const Text("Activity",
+                                  style: TextStyle(
+                                      fontSize: 8,
+                                      color: secondaryColor,
+                                      fontWeight: FontWeight.bold)),
+                            ],
                           ),
                         ),
                       ),
@@ -402,17 +421,30 @@ class EmployeeReportScreen extends GetView<EmployeeReportController> {
                         Get.toNamed(Routes.visitingReport, arguments: body);
                       },
                       child: Container(
-                        height: 60,
+                        height: 65,
                         width: 90,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: fillColor,
                         ),
                         child: Center(
-                          child: SvgPicture.asset(
-                            "assets/menu/visitingreport.svg",
-                            color: secondaryColor,
-                            fit: BoxFit.scaleDown,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/menu/visitingreport.svg",
+                                color: secondaryColor,
+                                fit: BoxFit.scaleDown,
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              const Text("Visiting report",
+                                  style: TextStyle(
+                                      fontSize: 8,
+                                      color: secondaryColor,
+                                      fontWeight: FontWeight.bold)),
+                            ],
                           ),
                         ),
                       ),
@@ -426,17 +458,30 @@ class EmployeeReportScreen extends GetView<EmployeeReportController> {
                         Get.toNamed(Routes.dashboard, arguments: body);
                       },
                       child: Container(
-                        height: 60,
+                        height: 65,
                         width: 90,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           color: fillColor,
                         ),
                         child: Center(
-                          child: SvgPicture.asset(
-                            "assets/menu/circular.svg",
-                            color: secondaryColor,
-                            fit: BoxFit.scaleDown,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SvgPicture.asset(
+                                "assets/menu/circular.svg",
+                                color: secondaryColor,
+                                fit: BoxFit.scaleDown,
+                              ),
+                              const SizedBox(
+                                height: 4,
+                              ),
+                              const Text("Dashboard",
+                                  style: TextStyle(
+                                      fontSize: 8,
+                                      color: secondaryColor,
+                                      fontWeight: FontWeight.bold)),
+                            ],
                           ),
                         ),
                       ),

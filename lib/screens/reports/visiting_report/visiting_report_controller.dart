@@ -167,7 +167,7 @@ class VisitingReportController extends GetxController {
             .getVisitingReport(box.read(Session.userid).toString(), date, date);
         if (response != null) {
           if (response["RtnStatus"]) {
-            data(response["RtnData"]["Details"]);
+            data(response["RtnData"]);
           } else {
             showToastMsg(response["RtnMessage"]);
             data.value = [];

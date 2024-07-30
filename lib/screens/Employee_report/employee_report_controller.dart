@@ -23,7 +23,7 @@ class EmployeeReportController extends GetxController {
   RxBool isLoading = false.obs;
 
   final box = GetStorage();
-  int userId = -1;
+  int userId = -1,empId =-1;
   var args = Get.arguments;
 
   @override
@@ -34,6 +34,7 @@ class EmployeeReportController extends GetxController {
     isSelectedDate(selected.day);
     selectedMonth(showFormat.format(selected));
     userId = box.read(Session.userid);
+    empId = box.read(Session.empId);
     //selectedMonth(showFormat.format(DateTime.now()));
     daysInMonth.value = DateUtils.getDaysInMonth(selected.year, selected.month);
     days.value = getAllDaysInMonth(selected.year, selected.month);
@@ -101,7 +102,7 @@ class EmployeeReportController extends GetxController {
     if (await isNetConnected()) {
       isLoading(true);
       StaffReportResponse? response = await ApiCall().getAttritionReportList(
-        '$userId',
+        '$empId',
         date,
         '${args["reportType"]}',
       );

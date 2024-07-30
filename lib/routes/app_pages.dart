@@ -14,6 +14,7 @@ import 'package:geotrack24fsc/screens/reports/visiting_report/visiting_report_sc
 import 'package:get/get.dart';
 
 import '../screens/circular/circular_screen.dart';
+import '../screens/notification/notification_screen.dart';
 import 'app_routes.dart';
 
 class AppPages {
@@ -31,7 +32,9 @@ class AppPages {
       name: Routes.home,
       page: () => HomeScreen(),),
 
-
+    GetPage(
+      name: Routes.notification,
+      page: () => NotificationScreen(),),
     GetPage(
       name: Routes.profile,
       page: () => ProfileScreen(),),

@@ -24,7 +24,7 @@ class PerformanceReportController extends GetxController {
   RxList data = RxList();
   RxBool isLoading = false.obs;
   final box = GetStorage();
-  int userId = -1;
+  int userId = -1,empId= -1;
 
   @override
   void onInit() async {
@@ -32,6 +32,7 @@ class PerformanceReportController extends GetxController {
     selectedMonth(showFormat.format(DateTime.now()));
     isSelectedDate(int.parse(DateTime.now().day.toString()));
     userId = box.read(Session.userid);
+    empId = box.read(Session.empId);
     daysInMonth.value = DateUtils.getDaysInMonth(now.year, now.month);
     days.value = getAllDaysInMonth(DateTime.now().year, DateTime.now().month);
     debugPrint("days: ${days.toString()}");
@@ -99,7 +100,7 @@ class PerformanceReportController extends GetxController {
     if (await isNetConnected()) {
       isLoading(true);
       PerformanceReport? response =
-          await ApiCall().getAttritionList('$userId', date);
+          await ApiCall().getAttritionList('$empId', date);
       if (response != null) {
         if (response.rtnStatus && response.rtnData.isNotEmpty) {
           data(response.rtnData);

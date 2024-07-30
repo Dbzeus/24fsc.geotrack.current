@@ -41,16 +41,21 @@ class CircularScreen extends GetView<CircularController> {
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        color: blackColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: SvgPicture.asset(
-                        "assets/icons/back.svg",
-                        fit: BoxFit.scaleDown,
+                    GestureDetector(
+                onTap: (){
+                  Get.back();
+        },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: blackColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: SvgPicture.asset(
+                          "assets/icons/back.svg",
+                          fit: BoxFit.scaleDown,
+                        ),
                       ),
                     ),
                     const SizedBox(

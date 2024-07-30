@@ -48,12 +48,12 @@ Future<void> initializeService() async {
         // you have to enable background fetch capability on xcode project
       ),
       androidConfiguration: AndroidConfiguration(
-          isForegroundMode: true, autoStart: true, onStart: onStart,
+          isForegroundMode: true, autoStart: false, onStart: onStart,
       // initialNotificationContent: "Preparing",
       //     initialNotificationTitle: "Background Service",
       //     notificationChannelId: "123"
       ));
-  //service.startService();
+  service.startService();
 }
 
 
@@ -74,6 +74,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: alice.getNavigatorKey(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        scaffoldBackgroundColor: whiteColor,
           colorScheme: ColorScheme.fromSeed(
           seedColor: primaryColor,
         ),

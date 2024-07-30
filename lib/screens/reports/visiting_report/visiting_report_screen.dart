@@ -350,8 +350,8 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
                 width: 20,
               ),
               Text(
-                controller.dateFormat
-                    .format(DateTime.parse(data["VisitingDate"].split("T")[0])),
+    data["VisitingDate"].toString(),/*controller.dateFormat
+                    .format(DateTime.parse(data["VisitingDate"].split("T")[0])),*/
                 style: const TextStyle(
                   fontSize: 12,
                   color: blackColor,

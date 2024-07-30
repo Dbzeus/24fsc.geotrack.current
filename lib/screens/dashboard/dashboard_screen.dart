@@ -200,7 +200,7 @@ class DashboardScreen extends GetView<DashboardController> {
                                             ///  '${controller.data.value!.present}'),
                                             Obx(
                                               () => _buildSeperator(
-                                                  'Missed\nPunch',
+                                                  'Absent',
                                                   controller
                                                       .data
                                                       .value!

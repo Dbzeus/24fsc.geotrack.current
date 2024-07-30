@@ -222,6 +222,7 @@ class MobileLoginController extends GetxController {
     _box.write(Session.isMobileLogin, false);
     _box.write(Session.isCustomer, rtnData[0].isCustomer);
     _box.write(Session.customerId, rtnData[0].customerID);
+    _box.write(Session.empId, rtnData[0].empId);
     _box.write(Session.isMarketing, rtnData[0].isMarketing);
     _box.write(Session.isILT, rtnData[0].isILT);
     _box.write(Session.serviceTimeInterval, rtnData[0].timeInterval);
