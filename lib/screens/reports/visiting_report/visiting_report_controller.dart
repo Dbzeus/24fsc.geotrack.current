@@ -42,6 +42,7 @@ class VisitingReportController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+
     if(Get.arguments == null){
       selectedMonth(showFormat.format(DateTime.now()));
       isSelectedDate(int.parse(DateTime.now().day.toString()));
@@ -164,7 +165,7 @@ class VisitingReportController extends GetxController {
       isLoading(true);
       try {
         var response = await ApiCall()
-            .getVisitingReport(box.read(Session.userid).toString(), date, date);
+            .getVisitingReport(userId.toString(), date, date);
         if (response != null) {
           if (response["RtnStatus"]) {
             data(response["RtnData"]);

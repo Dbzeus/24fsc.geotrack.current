@@ -246,29 +246,31 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
           ],
         ),
       ),
-      floatingActionButton: controller.argData == null ? FloatingActionButton(
-        onPressed: () async {
-          var res = await Get.toNamed(Routes.createReport);
-          if (res != null && res == true) {
-            controller.getVisitingReport(
-                date: DateTime.now().toString().split(" ")[0]);
-          }
-        },
-        backgroundColor: blackColor,
-        child: const Icon(
-          Icons.create,
-          size: 30,
-          color: whiteColor,
-        ),
-      ):const SizedBox.shrink(),
+      floatingActionButton: controller.argData == null
+          ? FloatingActionButton(
+              onPressed: () async {
+                var res = await Get.toNamed(Routes.createReport);
+                if (res != null && res == true) {
+                  controller.getVisitingReport(
+                      date: DateTime.now().toString().split(" ")[0]);
+                }
+              },
+              backgroundColor: blackColor,
+              child: const Icon(
+                Icons.create,
+                size: 30,
+                color: whiteColor,
+              ),
+            )
+          : const SizedBox.shrink(),
     );
   }
 
   _buildList(data) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      margin: const EdgeInsets.only(bottom: 10),
+      //padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
           color: whiteColor,
           borderRadius: BorderRadius.circular(16),
@@ -276,133 +278,135 @@ class VisitingReportScreen extends GetView<VisitingReportController> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  data["ClientName"].toString(),
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: primaryColor,
-                    fontWeight: FontWeight.bold,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: primaryColor.withAlpha(60),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        data["ClientName"].toString(),
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: primaryColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    data["UploadAudio"].toString().isNotEmpty
+                        ? GestureDetector(
+                            onTap: () {
+                              controller.sliderValue(0.0);
+                              if (data["UploadAudio"].toString().isNotEmpty) {
+                                String audioURL = data["UploadAudio"]
+                                    .toString()
+                                    .split(",")[0]
+                                    .trim();
+                                controller.audioAlertDialog(audioURL);
+                              } else {
+                                showToastMsg("No Audio Found");
+                              }
+                            },
+                            child: const Icon(
+                              Icons.play_circle,
+                              color: secondaryColor,
+                              size: 30,
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                ),
+                const SizedBox(
+                  height: 4,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.person_2_rounded,
+                            color: secondaryColor,
+                            size: 18,
+                          ),
+                          Expanded(
+                            child: Text(
+                              data["ContactPersonName"].toString(),
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: blackColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          data["VisitingDate"].toString(),
+                          /*controller.dateFormat
+                              .format(DateTime.parse(data["VisitingDate"].split("T")[0])),*/
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: blackColor,
+                          ),
+                        ),
+                        Text(
+                          " / ${data["VisitingTime"]}",
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: blackColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Expanded(
+                    child: Text(
+                      data["Remarks"].toString(),
+                      maxLines: 12,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: blackColor,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              data["UploadAudio"].toString().isNotEmpty
-                  ? GestureDetector(
-                      onTap: () {
-                        controller.sliderValue(0.0);
-                        if (data["UploadAudio"].toString().isNotEmpty) {
-                          String audioURL = data["UploadAudio"]
-                              .toString()
-                              .split(",")[0]
-                              .trim();
-                          controller.audioAlertDialog(audioURL);
-                        } else {
-                          showToastMsg("No Audio Found");
-                        }
-                      },
-                      child: const Icon(
-                        Icons.play_circle,
-                        color: secondaryColor,
-                        size: 30,
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-            ],
-          ),
-          const SizedBox(
-            height: 4,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.person,
-                      color: secondaryColor,
-                      size: 14,
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    Expanded(
-                      child: Text(
-                        data["ContactPersonName"].toString(),
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: blackColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              Text(
-    data["VisitingDate"].toString(),/*controller.dateFormat
-                    .format(DateTime.parse(data["VisitingDate"].split("T")[0])),*/
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: blackColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 4,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.message,
-                      color: secondaryColor,
-                      size: 14,
-                    ),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    Expanded(
-                      child: Text(
-                        data["Remarks"].toString(),
-                        maxLines: 10,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: blackColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              Text(
-                data["VisitingTime"].toString(),
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: blackColor,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

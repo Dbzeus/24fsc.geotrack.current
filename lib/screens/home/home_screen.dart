@@ -98,6 +98,7 @@ class HomeScreen extends GetView<HomeController> {
                         ),
                       ),
                       Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           GestureDetector(
                             onTap: () async {},

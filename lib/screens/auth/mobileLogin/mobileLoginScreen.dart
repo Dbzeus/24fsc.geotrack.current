@@ -28,8 +28,9 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
         children: [
           SvgPicture.asset(
             "assets/topbar/bg.svg",
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
+            width: double.infinity,
+            //height: MediaQuery.of(context).size.height,
+            //width: 500,//MediaQuery.of(context).size.width,
             fit: BoxFit.fill,
           ),
           Positioned(
@@ -129,14 +130,7 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
 
                       }),
 
-                  /* const SizedBox(
-                    height: 16,
-                  ),
-                  CustomButton(text: "background", onTap: (){
-                    FlutterBackgroundService().invoke('setAsBackground');
-                    //Get.toNamed(Routes.verification);
-                  }),
-*/
+
                 ],
               ),
             ),
