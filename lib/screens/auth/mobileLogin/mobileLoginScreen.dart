@@ -98,10 +98,12 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                   const SizedBox(
                     height: 16,
                   ),
-                  Obx(()=> CustomEditText(
+                  Obx(
+                    () => CustomEditText(
                       controller: controller.passwordController,
                       hintText: "Password",
                       obscureText: controller.isSecure.value,
+                      keyboardType: TextInputType.number,
                       suffixIcon: InkWell(
                         onTap: () => controller.passwordToggle(),
                         child: Icon(
@@ -118,19 +120,16 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                   CustomButton(
                       text: "verify",
                       onTap: () async {
-                        var res= await checkLocationPermission1();
-                        if(res){
+                        var res = await checkLocationPermission1();
+                        if (res) {
                           controller.login();
-                        }else{
-                          var res= await checkLocationPermission1();
-                          if(res){
+                        } else {
+                          var res = await checkLocationPermission1();
+                          if (res) {
                             controller.login();
                           }
                         }
-
                       }),
-
-
                 ],
               ),
             ),

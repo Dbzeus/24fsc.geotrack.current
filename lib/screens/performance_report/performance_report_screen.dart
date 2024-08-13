@@ -86,7 +86,7 @@ class PerformanceReportScreen extends GetView<PerformanceReportController> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
-                                  "Performance Report",
+                                  "Attendance Report",
                                   style: TextStyle(
                                     fontSize: 18,
                                     color: blackColor,
