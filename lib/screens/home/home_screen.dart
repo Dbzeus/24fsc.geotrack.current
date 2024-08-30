@@ -6,6 +6,7 @@ import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:geotrack24fsc/utils/constants.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:slider_button/slider_button.dart';
 
 import '../../routes/app_routes.dart';
@@ -213,7 +214,9 @@ class HomeScreen extends GetView<HomeController> {
                                       width: 4,
                                     ),
                                     GestureDetector(
-                                      onTap: () async {},
+                                      onTap: () async {
+                                        Get.toNamed(Routes.notification);
+                                      },
                                       child: const Icon(
                                         Icons.circle_notifications,
                                         size: 34,

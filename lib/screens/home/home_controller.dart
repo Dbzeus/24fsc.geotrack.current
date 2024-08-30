@@ -9,6 +9,7 @@ import 'package:geotrack24fsc/helpers/colors.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:intl/intl.dart';
 import 'package:package_info/package_info.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -38,6 +39,8 @@ class HomeController extends GetxController {
   final box = GetStorage();
   RxList timelines = RxList();
   RxBool isLoading = false.obs, isCanceled = true.obs;
+
+  AppUpdateInfo? _updateInfo;
 
   late PackageInfo packageInfo;
   Rx<String> currentDate = "".obs;
@@ -98,8 +101,31 @@ class HomeController extends GetxController {
       }*/
     });
 
+    await checkForUpdate();
+
     // TODO: implement onReady
     super.onReady();
+  }
+
+  Future<void> checkForUpdate() async {
+    InAppUpdate.checkForUpdate().then((info) {
+      debugPrint("Update info:${info.toString()}");
+
+      _updateInfo = info;
+      debugPrint(
+          "Update updateAvailability:${_updateInfo?.updateAvailability.toString()}");
+      if (_updateInfo?.updateAvailability ==
+          UpdateAvailability.updateAvailable) {
+        InAppUpdate.performImmediateUpdate();
+      }
+
+      /*    .catchError((e) {
+        showSnack(e.toString());
+        return AppUpdateResult.inAppUpdateFailed;
+      });*/
+    }).catchError((e) {
+      //showSnack(e.toString());
+    });
   }
 
   backgroundAccess() async {
@@ -109,8 +135,7 @@ class HomeController extends GetxController {
       await Geolocator.getCurrentPosition();
       //await Geolocator.openLocationSettings();
     }
-    PermissionStatus res =
-        await Permission.ignoreBatteryOptimizations.request();
+    PermissionStatus res =await Permission.ignoreBatteryOptimizations.request();
     /*if(res != PermissionStatus.granted){
       Get.defaultDialog(
           title: "Allow permission for Battery optimisation ",
@@ -144,7 +169,7 @@ class HomeController extends GetxController {
   checkLogIn() {
     var currentDate = showFormat.format(DateTime.now());
     if (box.read(Session.logInDate) == null) {
-      //variable thevai illa
+
       box.write(Session.logInDate, currentDate);
       debugPrint("First Date: $currentDate");
     } else {
@@ -225,8 +250,43 @@ class HomeController extends GetxController {
     }
   }
 
+ /* checkLocationPermissions(ApplicationSettingResponseData status) async {
+    PermissionStatus sts = await Permission.locationAlways.request();
+    if (sts.isGranted) {
+      changeStatus(status);
+    } else {
+      await checkLocationPermission1();
+
+    }
+
+    *//*debugPrint("res location: ${res.toString()}");
+    if (res) {
+      debugPrint("res0.5: ${res.toString()}");
+
+
+      if(sts.isGranted){
+
+      }else{
+
+      }
+
+      debugPrint("res1: ${res.toString()}");
+    } else {
+      await Future.delayed(const Duration(seconds: 3), () async {
+        showToastMsg("Please allow Location all the time");
+        var res = await checkLocationPermission1();
+        debugPrint("res2: ${res.toString()}");
+        if (res) {
+          debugPrint("res2.5: ${res.toString()}");
+          changeStatus(status);
+          debugPrint("res3: ${res.toString()}");
+        }
+      });
+    }*//*
+  }*/
+
   changeStatus(ApplicationSettingResponseData status) async {
-    try{
+    try {
       if (await isNetConnected()) {
         showLoader(title: 'Load Setting');
         await getSettings();
@@ -242,9 +302,9 @@ class HomeController extends GetxController {
               enableDrag: false,
               shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
-                  )),
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
+              )),
               builder: (context) {
                 return WillPopScope(
                   onWillPop: () async {
@@ -305,7 +365,7 @@ class HomeController extends GetxController {
               altitudeAccuracy: 0,
               headingAccuracy: 0);
         }
-        isCanceled(true); // setting true, because its always true for slider button. if position gives null then only,change to false
+        isCanceled(true);// setting true, because its always true for slider button. if position gives null then only,change to false
         if (position == null) {
           isCanceled(false);
           return;
@@ -333,11 +393,12 @@ class HomeController extends GetxController {
         if (response != null) {
           if (response['RtnStatus']) {
             showToastMsg('${response['RtnMessage']}');
-            box.write(Session.isAutoFetch, status.status.first.statusID.toString());
+            box.write(
+                Session.isAutoFetch, status.status.first.statusID.toString());
             // debugPrint("status id: ${box.read(Session.isAutoFetch).toString()}");
             // debugPrint("AUTO FETCH:${box.read(Session.isAutoFetch)}");
             if (int.parse(box.read(Session.isAutoFetch)) == 1) // 1 is login
-                {
+            {
               // debugPrint(
               //     "AUTO FETCH in foreground:${box.read(Session.isAutoFetch)}");
               var permission = await checkLocationPermission1();
@@ -371,8 +432,8 @@ class HomeController extends GetxController {
                 //FlutterBackgroundService().invoke('setAsBackground');
               }
             } else
-              /*if (int.parse(box.read(Session.isAutoFetch)) == 2)*/ //  2 is logout
-                {
+            /*if (int.parse(box.read(Session.isAutoFetch)) == 2)*/ //  2 is logout
+            {
               debugPrint("stop service");
               debugPrint("AUTO FETCH in stop:${box.read(Session.isAutoFetch)}");
               var res = await FlutterBackgroundService().isRunning();
@@ -382,7 +443,6 @@ class HomeController extends GetxController {
                 box.write(Session.isRunnerCancelling, false);
               }
             }
-
           } else {
             showAlert(
                 'Status Update Failed!', '${response['RtnMessage']}', 'Okay',
@@ -391,10 +451,9 @@ class HomeController extends GetxController {
           getTimeline();
         }
       }
-    }catch(e){
+    } catch (e) {
       debugPrint("ERROR:${e.toString()}");
     }
-
   }
 
   void appLogout({bool? isHaveDialog}) async {

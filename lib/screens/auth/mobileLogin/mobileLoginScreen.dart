@@ -1,17 +1,16 @@
+import 'dart:ui';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:geotrack24fsc/routes/app_routes.dart';
 import 'package:geotrack24fsc/screens/auth/mobileLogin/mobileLogincontroller.dart';
+import 'package:geotrack24fsc/screens/auth/mobileLogin/privacy_policy.dart';
 import 'package:geotrack24fsc/widgets/custom_button.dart';
 import 'package:get/get.dart';
-import 'package:record/record.dart';
 
 import '../../../utils/location_permission.dart';
-import '../../../utils/notification.dart';
-import '../../../utils/services.dart';
 import '../../../widgets/custom_edittext.dart';
 
 class MobileLoginScreen extends GetView<MobileLoginController> {
@@ -117,6 +116,66 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                   const SizedBox(
                     height: 16,
                   ),
+                  Obx(() => CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        value: controller.isCheck.value,
+                        onChanged: (val) {
+                          controller.isCheck(val);
+                          debugPrint("Check:${controller.isCheck.value.toString()}");
+                        },
+                        controlAffinity: ListTileControlAffinity.leading,
+                        dense: true,
+                        subtitle: GestureDetector(
+                          onTap: () {
+                            Get.toNamed(Routes.privacy);
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              RichText(
+                                  text: const TextSpan(
+                                      text: "I have read and agreed to ",
+                                      style: TextStyle(
+                                        fontSize: 12,
+
+                                        color: Colors.grey,
+                                      ),
+                                      children: [
+                                    TextSpan(
+                                      text:
+                                          "Terms of Service ",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                        TextSpan(
+                                          text:
+                                          "and",
+                                          style: TextStyle(
+                                            fontSize: 12,
+
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text:
+                                          " Privacy Policy",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: primaryColor,
+                                          ),
+                                        )
+                                  ])),
+                            ],
+                          ),
+                        ),
+                      )),
+                  const SizedBox(
+                    height: 16,
+                  ),
                   CustomButton(
                       text: "verify",
                       onTap: () async {
@@ -130,6 +189,7 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                           }
                         }
                       }),
+
                 ],
               ),
             ),

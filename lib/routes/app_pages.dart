@@ -2,6 +2,7 @@
 import 'package:geotrack24fsc/screens/Employee_report/employee_report_screen.dart';
 import 'package:geotrack24fsc/screens/activities/activities_screen.dart';
 import 'package:geotrack24fsc/screens/auth/mobileLogin/mobileLoginScreen.dart';
+import 'package:geotrack24fsc/screens/auth/mobileLogin/privacy_policy.dart';
 import 'package:geotrack24fsc/screens/auth/verification/verification_screen.dart';
 import 'package:geotrack24fsc/screens/circular/circular_photo.dart';
 import 'package:geotrack24fsc/screens/dashboard/dashboard_screen.dart';
@@ -22,6 +23,10 @@ class AppPages {
   GetPage(
   name: Routes.mobileLogin,
   page: () => MobileLoginScreen(),),
+    GetPage(
+      name: Routes.privacy,
+      page: () => PrivacyPolicyScreen(),),
+
     GetPage(
       name: Routes.onboarding,
       page: () => OnboardingScreen(),),

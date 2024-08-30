@@ -27,54 +27,31 @@ Future<bool> checkLocationPermission() async {
 Future<bool> checkLocationPermission1() async {
   PermissionStatus status = await Permission.locationAlways.request();
   if (status.isGranted) {
-    /*final access = await Geolocator.checkPermission();
-
-    switch (access) {
-      case LocationPermission.denied:
-        final permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          return false;
-        } else {
-          return true;
-        }
-
-      case LocationPermission.deniedForever:
-        //showToastMsg('Location Permission Needed');
-        openAppSettings();
-        return false;
-
-      case LocationPermission.always:
-      case LocationPermission.whileInUse:
-        return true;
-
-      default:
-        return false;
-    }*/
     return true;
   } else {
     await Get.defaultDialog(
+        barrierDismissible: false,
         title: "Allow permission for Location ",
-        /*and Battery usage */
+        /*and Battery usage  */
         titleStyle: const TextStyle(
           color: secondaryColor,
           fontSize: 14,
           fontWeight: FontWeight.bold,
         ),
         middleText: "${"1.Permissions -> Location -> Allow All the time."} ",
-        /*\n${"2.Battery -> Dont optimise (OR) Allow background activity"}*/
         confirm: CustomButton(
             text: "Settings",
-            onTap: () {
+            onTap: ()  {
               Get.back();
               openAppSettings();
             }));
-
     return false;
   }
 }
 
 Future<bool> checkBatteryOptimisation() async {
   await Get.defaultDialog(
+      barrierDismissible: false,
       title: "Allow permission for Battery usage ",
       titleStyle: const TextStyle(
         color: secondaryColor,
@@ -82,7 +59,7 @@ Future<bool> checkBatteryOptimisation() async {
         fontWeight: FontWeight.bold,
       ),
       middleText:
-          "${"1.Battery -> Dont optimise (OR) Allow background activity"}",
+          "1.Battery -> Dont optimise (OR) Allow background activity",
       confirm: CustomButton(
           text: "Settings",
           onTap: () {

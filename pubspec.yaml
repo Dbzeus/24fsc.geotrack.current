@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.5.0+3
+version: 1.6.3+7
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -39,6 +39,7 @@ dependencies:
   flutter_background_service: any
   flutter_background_service_android: 6.0.0
   url_launcher:
+  flutter_inappwebview: ^6.0.0
 
   package_info:
   device_info:
@@ -53,6 +54,7 @@ dependencies:
   flutter_overlay_window: ^0.4.4
   disable_battery_optimization: ^1.1.1
   app_settings: ^5.1.1
+  in_app_update: ^4.2.3
 
 
 dev_dependencies:

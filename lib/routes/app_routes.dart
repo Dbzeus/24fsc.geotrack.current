@@ -4,6 +4,7 @@ class Routes{
   static const verification = "/verification";
   static const home = "/home";
   static const profile = "/profile";
+  static const privacy = "/privacy";
   static const dashboard = "/menu/dashboard";
   static const visitingReport = "/menu/visitingReport";
   static const createReport = "/menu/visitingReport/createReport";

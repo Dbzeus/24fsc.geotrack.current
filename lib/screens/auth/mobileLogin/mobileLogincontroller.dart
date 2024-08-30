@@ -33,6 +33,8 @@ class MobileLoginController extends GetxController {
   RxBool isSecure = true.obs;
   var passwordIcon = Icons.visibility.obs;
 
+  RxBool isCheck = false.obs;
+
   passwordToggle() {
     isSecure(!isSecure.value);
     isSecure.value
@@ -163,10 +165,10 @@ class MobileLoginController extends GetxController {
       showToastMsg('Enter correct mobile number');
     } else if (passwordController.text.isEmpty) {
       showToastMsg('Enter password');
+    }else if(isCheck.value == false){
+      showToastMsg('Please read and agree to our Privacy Policy terms.');
     } else {
-      if (!await isNetConnected()) {
-        return showToastMsg('Check your internet connection');
-      }
+      if (await isNetConnected()) {
       showLoader(title: "Loading");
 
       if (token.isEmpty) {
@@ -205,7 +207,7 @@ class MobileLoginController extends GetxController {
       }
       hideLoader();
       //isLoginLoading(false);
-    }
+    }}
   }
 
   goToHome(List<RtnData> rtnData) {
