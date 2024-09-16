@@ -17,12 +17,14 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../apis/api_call.dart';
 
+import '../../../helpers/colors.dart';
 import '../../../models/MobileLoginResponse.dart';
 import '../../../routes/app_routes.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/loader.dart';
 import '../../../utils/location_permission.dart';
 import '../../../utils/session.dart';
+import '../../../widgets/custom_button.dart';
 /*import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;*/
 
@@ -34,6 +36,8 @@ class MobileLoginController extends GetxController {
   var passwordIcon = Icons.visibility.obs;
 
   RxBool isCheck = false.obs;
+
+  bool collectDataEnable = false;
 
   passwordToggle() {
     isSecure(!isSecure.value);
@@ -55,6 +59,7 @@ class MobileLoginController extends GetxController {
   var info;
   final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+
   @override
   void onInit() async {
     super.onInit();
@@ -63,14 +68,15 @@ class MobileLoginController extends GetxController {
     appVersion('App Version ${packageInfo.version}');
     var res1 = await Permission.locationAlways.isGranted;
     debugPrint("REsult1: ${res1.toString()}");
-    if (res1 == false) { // false is status is not granted
-       await checkLocationPermission1();
+    if (res1 == false) {
+      // false is status is not granted
+      await checkLocationPermission1();
     }
-    var res = await Permission.ignoreBatteryOptimizations.isGranted;
+   /* var res = await Permission.ignoreBatteryOptimizations.isGranted;
     debugPrint("REsult: ${res.toString()}");
     if (res == false) {
       await checkBatteryOptimisation();
-    }
+    }*/
     /*backgroundAccess();
     bool? isAutoStartEnabled =
         await DisableBatteryOptimization.isAutoStartEnabled;
@@ -153,11 +159,51 @@ class MobileLoginController extends GetxController {
     _fcm.requestPermission();
     token = await _fcm.getToken() ?? '';
     debugPrint("FCM token: $token");
+    dataDialog();
+  }
+
+  dataDialog() async {
+    await Get.defaultDialog(
+      barrierDismissible: false,
+      title: "Alert",
+      /*and Battery usage  */
+      titleStyle: const TextStyle(
+        color: secondaryColor,
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+      ),
+      middleText:
+          "My 24fscgeotrack collects location data to enable user to track live locations.",
+      confirm: Row(
+        children: [
+          CustomButton(
+            height: 30,
+              width: MediaQuery.of(Get.context!).size.width * 0.35,
+              text: "Accept",
+              onTap: () async {
+              Get.back();
+                collectDataEnable = true;
+                var res = await checkLocationPermission1();
+              }),
+          const SizedBox(
+            width: 8,
+          ),
+          CustomButton(
+              height: 30,
+              btnColor: Colors.red,
+              width: MediaQuery.of(Get.context!).size.width * 0.35,
+              text: "Deny",
+              onTap: () {
+                Get.back();
+                collectDataEnable = false;
+              })
+        ],
+      ),
+    );
   }
 
   login() async {
     Get.focusScope?.unfocus();
-
     if (mobNoController.text.isEmpty) {
       showToastMsg('Enter mobile number');
     } else if (!(mobNoController.text.length == 6 ||
@@ -165,27 +211,29 @@ class MobileLoginController extends GetxController {
       showToastMsg('Enter correct mobile number');
     } else if (passwordController.text.isEmpty) {
       showToastMsg('Enter password');
-    }else if(isCheck.value == false){
+    }
+    /* }else if(isCheck.value == false){
       showToastMsg('Please read and agree to our Privacy Policy terms.');
-    } else {
+    }*/
+    else {
       if (await isNetConnected()) {
-      showLoader(title: "Loading");
+        showLoader(title: "Loading");
 
-      if (token.isEmpty) {
-        token = await _fcm.getToken() ?? '';
-      }
-      _box.write(Session.token, token);
+        if (token.isEmpty) {
+          token = await _fcm.getToken() ?? '';
+        }
+        _box.write(Session.token, token);
 
-      MobileLoginResponse? response = await ApiCall().checkLogin(
-          mobNoController.text, passwordController.text, token, info);
+        MobileLoginResponse? response = await ApiCall().checkLogin(
+            mobNoController.text, passwordController.text, token, info);
 
-      if (response != null) {
-        if (response.rtnStatus ?? false) {
-          showToastMsg(response.rtnMessage);
-          goToHome(response.rtnData);
-        } else {
-          showToastMsg('${response.rtnMessage}');
-        } /*else {
+        if (response != null) {
+          if (response.rtnStatus ?? false) {
+            showToastMsg(response.rtnMessage);
+            goToHome(response.rtnData);
+          } else {
+            showToastMsg('${response.rtnMessage}');
+          } /*else {
           if (response.id == 1) {
             //show popup
             bool? res = await showAlert(
@@ -204,10 +252,11 @@ class MobileLoginController extends GetxController {
             showToastMsg('${response.rtnMessage}');
           }
         }*/
+        }
+        hideLoader();
+        //isLoginLoading(false);
       }
-      hideLoader();
-      //isLoginLoading(false);
-    }}
+    }
   }
 
   goToHome(List<RtnData> rtnData) {

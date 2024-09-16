@@ -1,4 +1,4 @@
-package com.dbzeus.geotrack24FSC
+package com.dbzeus.geotrack_24fsc
 
 import io.flutter.embedding.android.FlutterActivity
 

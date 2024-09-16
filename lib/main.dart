@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
 
   static Alice alice = Alice(
     showNotification: true,
-    showInspectorOnShake: true,
+      showInspectorOnShake: true,
   );
 
   @override

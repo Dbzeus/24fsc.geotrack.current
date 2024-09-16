@@ -25,6 +25,10 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
+
+          Image.asset(
+            "assets/logo/24FSC.png"
+          ),
           SvgPicture.asset(
             "assets/topbar/bg.svg",
             width: double.infinity,
@@ -113,7 +117,7 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                       ),
                     ),
                   ),
-                  const SizedBox(
+                 /* const SizedBox(
                     height: 16,
                   ),
                   Obx(() => CheckboxListTile(
@@ -172,20 +176,24 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                             ],
                           ),
                         ),
-                      )),
+                      )),*/
                   const SizedBox(
                     height: 16,
                   ),
                   CustomButton(
                       text: "verify",
                       onTap: () async {
-                        var res = await checkLocationPermission1();
-                        if (res) {
-                          controller.login();
-                        } else {
+                        if(controller.collectDataEnable == false){
+                          controller.dataDialog();
+                        }else{
                           var res = await checkLocationPermission1();
                           if (res) {
                             controller.login();
+                          } else {
+                            var res = await checkLocationPermission1();
+                            if (res) {
+                              controller.login();
+                            }
                           }
                         }
                       }),
