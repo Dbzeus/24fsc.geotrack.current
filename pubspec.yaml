@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.6.5+9
+version: 1.6.7+10
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -43,7 +43,7 @@ dependencies:
 
   package_info:
   device_info:
-  image_picker:
+#  image_picker:
   mat_month_picker_dialog:
   google_maps_flutter:
   just_audio:

@@ -102,6 +102,7 @@ class ProfileScreenController extends GetxController{
       showLoader(title: 'Logging Out');
       _box.erase();
       _box.write(Session.isMobileLogin, true);
+      _box.write(Session.isCollectDataEnabled, true);
       hideLoader();
       Get.offAllNamed(Routes.mobileLogin);
     }

@@ -66,13 +66,34 @@ class MobileLoginController extends GetxController {
     packageInfo = await PackageInfo.fromPlatform();
     _box.write(Session.version, packageInfo.version);
     appVersion('App Version ${packageInfo.version}');
-    var res1 = await Permission.locationAlways.isGranted;
-    debugPrint("REsult1: ${res1.toString()}");
-    if (res1 == false) {
-      // false is status is not granted
-      await checkLocationPermission1();
+
+    if (Platform.isAndroid) {
+      info = await _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
+    } else if (Platform.isIOS) {
+      info = await _readIosBuildData(await deviceInfoPlugin.iosInfo);
     }
-   /* var res = await Permission.ignoreBatteryOptimizations.isGranted;
+
+    collectDataEnable = _box.read(Session.isCollectDataEnabled) ?? false;
+
+    if (collectDataEnable == false) {
+      await dataDialog();
+
+      var res = await checkLocationPermission2();
+    } else {
+      var res = await checkLocationPermission2();
+      if (res == true) {
+        return;
+      } else {
+        var permission = await Permission.locationAlways.request();
+        if (permission.isGranted) {
+          return;
+        } else {
+          await allowLocationPermission();
+        }
+      }
+    }
+
+    /* var res = await Permission.ignoreBatteryOptimizations.isGranted;
     debugPrint("REsult: ${res.toString()}");
     if (res == false) {
       await checkBatteryOptimisation();
@@ -117,11 +138,7 @@ class MobileLoginController extends GetxController {
     debugPrint(
         "isManufacturerBatteryOptimizationDisabled:${isManufacturerBatteryOptimizationDisabled.toString()}");*/
 
-    if (Platform.isAndroid) {
-      info = await _readAndroidBuildData(await deviceInfoPlugin.androidInfo);
-    } else if (Platform.isIOS) {
-      info = await _readIosBuildData(await deviceInfoPlugin.iosInfo);
-    }
+
   }
 
   Future<Map<String, dynamic>> _readAndroidBuildData(
@@ -159,7 +176,6 @@ class MobileLoginController extends GetxController {
     _fcm.requestPermission();
     token = await _fcm.getToken() ?? '';
     debugPrint("FCM token: $token");
-    dataDialog();
   }
 
   dataDialog() async {
@@ -172,31 +188,49 @@ class MobileLoginController extends GetxController {
         fontSize: 14,
         fontWeight: FontWeight.bold,
       ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       middleText:
           "My 24fscgeotrack collects location data to enable user to track live locations.",
-      confirm: Row(
+      confirm: Column(
         children: [
-          CustomButton(
-            height: 30,
-              width: MediaQuery.of(Get.context!).size.width * 0.35,
-              text: "Accept",
-              onTap: () async {
-              Get.back();
-                collectDataEnable = true;
-                var res = await checkLocationPermission1();
-              }),
-          const SizedBox(
-            width: 8,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              CustomButton(
+                  height: 30,
+                  borderRadius: 12,
+                  width: MediaQuery.of(Get.context!).size.width * 0.30,
+                  text: "Accept",
+                  onTap: () async {
+                    Get.back();
+                    _box.write(Session.isCollectDataEnabled, true);
+                    collectDataEnable = _box.read(Session.isCollectDataEnabled);
+                    var permission = await Permission.locationAlways.request();
+                    if (permission.isGranted) {
+                      return;
+                    } else {
+                      await allowLocationPermission();
+                    }
+                  }),
+              const SizedBox(
+                width: 16,
+              ),
+              CustomButton(
+                  height: 30,
+                  borderRadius: 12,
+                  btnColor: Colors.red,
+                  width: MediaQuery.of(Get.context!).size.width * 0.30,
+                  text: "Deny",
+                  onTap: () {
+                    Get.back();
+                    _box.write(Session.isCollectDataEnabled, false);
+                    collectDataEnable = _box.read(Session.isCollectDataEnabled);
+                  }),
+            ],
           ),
-          CustomButton(
-              height: 30,
-              btnColor: Colors.red,
-              width: MediaQuery.of(Get.context!).size.width * 0.35,
-              text: "Deny",
-              onTap: () {
-                Get.back();
-                collectDataEnable = false;
-              })
+          const SizedBox(
+            height: 16,
+          ),
         ],
       ),
     );
@@ -217,13 +251,17 @@ class MobileLoginController extends GetxController {
     }*/
     else {
       if (await isNetConnected()) {
+        if (collectDataEnable == false) {
+          await dataDialog();
+          return;
+        }
         showLoader(title: "Loading");
 
         if (token.isEmpty) {
           token = await _fcm.getToken() ?? '';
         }
         _box.write(Session.token, token);
-
+        debugPrint("info :${info.toString()}");
         MobileLoginResponse? response = await ApiCall().checkLogin(
             mobNoController.text, passwordController.text, token, info);
 

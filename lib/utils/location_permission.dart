@@ -9,6 +9,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'constants.dart';
+
 Future<bool> checkLocationPermission() async {
   var permission = await Geolocator.checkPermission();
   if (permission == LocationPermission.denied) {
@@ -24,7 +26,41 @@ Future<bool> checkLocationPermission() async {
   return true;
 }
 
-Future<bool> checkLocationPermission1() async {
+Future<bool> checkLocationPermission2() async {
+  final access = await Geolocator.requestPermission();
+  // PermissionStatus status = await Permission.locationAlways.request();
+  // debugPrint("ACCESS: ${access.toString()}");
+  // debugPrint("status: ${status.toString()}");
+
+  switch (access) {
+    case LocationPermission.denied:
+      final permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return false;
+      } else {
+        return true;
+      }
+
+    case LocationPermission.deniedForever:
+      //showToastMsg('Location Permission Needed');
+     // openAppSettings();
+      return false;
+
+    case LocationPermission.always:
+      return true;
+
+    case LocationPermission.whileInUse:
+     // showToastMsg('Location Permission Needed');
+       //openAppSettings();
+      return false;
+
+
+    default:
+      return false;
+  }
+}
+
+Future<bool> allowLocationPermission() async {
   PermissionStatus status = await Permission.locationAlways.request();
   if (status.isGranted) {
     return true;
@@ -41,7 +77,7 @@ Future<bool> checkLocationPermission1() async {
         middleText: "${"1.Permissions -> Location -> Allow All the time."} ",
         confirm: CustomButton(
             text: "Settings",
-            onTap: ()  {
+            onTap: () {
               Get.back();
               openAppSettings();
             }));
@@ -58,8 +94,7 @@ Future<bool> checkBatteryOptimisation() async {
         fontSize: 14,
         fontWeight: FontWeight.bold,
       ),
-      middleText:
-          "1.Battery -> Dont optimise (OR) Allow background activity",
+      middleText: "1.Battery -> Dont optimise (OR) Allow background activity",
       confirm: CustomButton(
           text: "Settings",
           onTap: () {

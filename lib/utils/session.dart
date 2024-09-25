@@ -19,6 +19,7 @@ class Session {
   static const String isILT = "isILT";
   static const String serviceTimeInterval = "timeInterval";
   static const String autoLogoutTime = "autoLogoutTime";
+  static const String isCollectDataEnabled = "isCollectDataEnabled";
 
   //String
   static const String token = "token";

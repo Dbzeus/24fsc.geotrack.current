@@ -10,12 +10,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    dynamic url = WebUri("https://dbzeus.com/legal/");
+    dynamic url = WebUri("https://dbzeus.com/privacy-policy-2/");
     return Scaffold(
       appBar: AppBar(
         backgroundColor: primaryColor,
         title: Text(
-          "Terms and Privacy Policy",
+          "Privacy Policy",
           style: TextStyle(fontSize: 14, color: whiteColor),
         ),
         leading: GestureDetector(

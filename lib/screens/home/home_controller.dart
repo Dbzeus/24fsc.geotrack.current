@@ -401,7 +401,7 @@ class HomeController extends GetxController {
             {
               // debugPrint(
               //     "AUTO FETCH in foreground:${box.read(Session.isAutoFetch)}");
-              var permission = await checkLocationPermission1();
+              var permission = await allowLocationPermission();
               if (permission == true) {
                 var res;
                 res = await FlutterBackgroundService().isRunning();

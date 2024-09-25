@@ -25,10 +25,7 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
       resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
-
-          Image.asset(
-            "assets/logo/24FSC.png"
-          ),
+          Image.asset("assets/logo/24FSC.png"),
           SvgPicture.asset(
             "assets/topbar/bg.svg",
             width: double.infinity,
@@ -117,7 +114,7 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                       ),
                     ),
                   ),
-                 /* const SizedBox(
+                  /* const SizedBox(
                     height: 16,
                   ),
                   Obx(() => CheckboxListTile(
@@ -183,21 +180,48 @@ class MobileLoginScreen extends GetView<MobileLoginController> {
                   CustomButton(
                       text: "verify",
                       onTap: () async {
-                        if(controller.collectDataEnable == false){
+                        controller.login();
+                       /* if (controller.collectDataEnable == false) {
                           controller.dataDialog();
-                        }else{
-                          var res = await checkLocationPermission1();
+                        }
+                        else {
+                          var res = await allowLocationPermission();
                           if (res) {
                             controller.login();
                           } else {
-                            var res = await checkLocationPermission1();
+                            var res = await allowLocationPermission();
                             if (res) {
                               controller.login();
                             }
                           }
-                        }
+                        }*/
                       }),
-
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: (){
+                      Get.toNamed(Routes.privacy);
+                    },
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: const TextSpan(
+                        text: "By continuing, you agree to 24Fsc geotrack's ",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black87,
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "  Privacy Policy",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
