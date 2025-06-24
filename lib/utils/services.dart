@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:geotrack24fsc/utils/session.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
@@ -28,7 +28,8 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
   });
   await GetStorage.init();
   final box = GetStorage();
-  int time = await box.read(Session.serviceTimeInterval) /*?? 10*/;
+  // int time = 2;
+   int time = await box.read(Session.serviceTimeInterval) /*?? 10*/;
   String Autologouttime = await box.read(Session.autoLogoutTime) /*?? 10*/;
   debugPrint("Service time in service: ${time.toString()}");
   Timer.periodic(Duration(minutes: time), (timer) async {
@@ -73,6 +74,7 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
             // debugPrint("ABCD4");
             box.write(Session.isRunnerCancelling, false);
             serviceInstance.stopSelf();
+            await FlutterOverlayWindow.closeOverlay();
           }
         }
       } else {
@@ -81,7 +83,7 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
       }
     } else {
       // debugPrint("ABCD5");
-      backgroundLocationService("3"); // auto fetch
+      await backgroundLocationService("3"); // auto fetch
     }
     serviceInstance.invoke('update');
   });
@@ -90,6 +92,7 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
 @pragma('vm:entry-point',true)
 backgroundLocationService(String status) async {
   var position = await getCurrentLocationForBackgroundFetch();
+  debugPrint("position123:${position.toString()}");
   //await GetStorage.init();
   final box = GetStorage();
   if (box.read(Session.userid) != null ||
@@ -120,7 +123,9 @@ backgroundLocationService(String status) async {
     }
   } else {
     // debugPrint("1234567890");
-    backgroundLocationService(status);
+    await backgroundLocationService(status);
     return false;
   }
+
 }
+

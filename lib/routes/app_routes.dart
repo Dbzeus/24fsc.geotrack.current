@@ -14,6 +14,7 @@ class Routes{
   static const circularPhoto = "/menu/circular/photo";
   static const performanceReport = "/menu/performanceReport";
   static const employeeReport = "/menu/performanceReport/employeeReport";
+  static const serviceOverlay = "/service/overlay";
 
 
 }

@@ -1,28 +1,29 @@
-buildscript {
-    ext.kotlin_version = '1.8.10'
-   /* ext {
-        compileSdkVersion = 34                // or higher / as desired
-        targetSdkVersion = 33                // or higher / as desired
-        minSdkVersion = 22                // Required minimum
-        appCompatVersion = "1.4.2"           // or higher / as desired
-        playServicesLocationVersion = "21.0.1"  // or higher / as desired
-    }*/
-    repositories {
-        google()
-        mavenCentral()
+//buildscript {
+//    ext.kotlin_version = '1.8.10'
+//   /* ext {
+//        compileSdkVersion = 34                // or higher / as desired
+//        targetSdkVersion = 33                // or higher / as desired
+//        minSdkVersion = 22                // Required minimum
+//        appCompatVersion = "1.4.2"           // or higher / as desired
+//        playServicesLocationVersion = "21.0.1"  // or higher / as desired
+//    }*/
+//    repositories {
+//        google()
+//        mavenCentral()
+//
+//    }
 
-    }
 
+//    dependencies {
+//        classpath 'com.android.tools.build:gradle:8.4.2'
+////        classpath 'com.android.tools.build:gradle:8.9.2'
+//        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+//        classpath 'com.google.gms:google-services:4.4.2'
+//        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.3'
+//
+//    }
 
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.google.gms:google-services:4.4.2'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.2'
-
-    }
-}
-
+//}
 allprojects {
     repositories {
         google()

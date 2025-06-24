@@ -12,6 +12,7 @@ import 'package:geotrack24fsc/screens/performance_report/performance_report_scre
 import 'package:geotrack24fsc/screens/profile/profile_screen.dart';
 import 'package:geotrack24fsc/screens/reports/create_report/create_report_screen.dart';
 import 'package:geotrack24fsc/screens/reports/visiting_report/visiting_report_screen.dart';
+import 'package:geotrack24fsc/screens/service_overlay/service_overlay.dart';
 import 'package:get/get.dart';
 
 import '../screens/circular/circular_screen.dart';
@@ -73,5 +74,9 @@ class AppPages {
     GetPage(
       name: Routes.circularPhoto,
       page: () => CircularPhotoScreen(),),
+
+    GetPage(
+      name: Routes.serviceOverlay,
+      page: () => ServiceOverlay(),),
 
   ];}

@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.6.7+10
+version: 1.9.0+16
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -14,35 +14,49 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   flutter_svg:
-  google_fonts: 6.1.0
+  google_fonts: ^6.2.1
   get: ^4.6.5
   fluttertoast:
   connectivity_plus:
   get_storage:
-  alice:
+  alice: ^1.0.0-dev.12
+  alice_dio: ^1.0.4
+#  alice: ^0.4.2
+#  flutter_alice: ^2.0.1
+
   dio:
+
+  package_info_plus:
   cached_network_image:
   flutter_native_splash:
   intl:
   slider_button: ^2.1.0
   timeline_tile:
-  fl_chart: ^0.68.0
-  workmanager:
-  geolocator:
+  fl_chart: ^0.71.0
+
+#  workmanager: ^0.5.2
+#  workmanager:
+#  geolocator: 13.0.4
+#  geolocator_android: ^5.0.1+1
+  geolocator_android: 4.6.0
+  geolocator: ^9.0.2
+#  geolocator: ^14.0.0
+  geolocator_web:
   flutter_local_notifications:
   firebase_core:
+  disable_battery_optimization: 1.1.1
   firebase_crashlytics:
   firebase_messaging:
   permission_handler:
   #background_locator_2: ^2.0.6
   #flutter_background_geolocation: '^4.12.0'
   flutter_background_service: any
-  flutter_background_service_android: 6.0.0
+  flutter_background_service_android: ^6.3.0
   url_launcher:
   flutter_inappwebview: ^6.0.0
 
-  package_info:
-  device_info:
+
+
 #  image_picker:
   mat_month_picker_dialog:
   google_maps_flutter:
@@ -51,9 +65,10 @@ dependencies:
   path_provider:
   flutter_polyline_points: ^2.0.0
 # flutter_foreground_task: ^6.5.0
-  flutter_overlay_window: ^0.4.4
-  disable_battery_optimization: ^1.1.1
-  app_settings: ^5.1.1
+  flutter_overlay_window: ^0.5.0
+  device_info_plus: 10.1.2
+
+  app_settings: ^6.1.1
   in_app_update: ^4.2.3
 
 
@@ -61,7 +76,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
   flutter_launcher_icons:
   change_app_package_name: ^1.0.0
 

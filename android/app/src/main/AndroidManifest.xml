@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <queries>
         <!--  If your app opens https URLs  -->
@@ -34,6 +36,7 @@
         android:label="geotrack24fsc"
         android:allowBackup="false"
         android:fullBackupOnly="false"
+
         tools:replace="android:label">
         <activity
             android:name=".MainActivity"
@@ -68,7 +71,20 @@
             android:name=".MyService"
             android:exported="false"
             android:foregroundServiceType="location">
+
         </service>
+        <service android:name="flutter.overlay.window.flutter_overlay_window.OverlayService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Location Fetching"/>
+        </service>
+        <service
+            android:name="id.flutter.flutter_background_service.BackgroundService"
+            android:foregroundServiceType="location"
+            android:exported="false"
+            tools:replace="android:exported"
+            android:permission="android.permission.FOREGROUND_SERVICE" />
      <!--   <service
             android:name=".BackgroundService"
             android:foregroundServiceType="location">

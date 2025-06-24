@@ -1,5 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:flutter_svg/svg.dart';
 
 import 'package:geotrack24fsc/helpers/colors.dart';
@@ -9,7 +14,9 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:slider_button/slider_button.dart';
 
+import '../../main.dart';
 import '../../routes/app_routes.dart';
+import '../../utils/location_permission.dart';
 import '../../utils/services.dart';
 import '../../utils/session.dart';
 import 'history.dart';
@@ -183,8 +190,27 @@ class HomeScreen extends GetView<HomeController> {
                                   children: [
                                     GestureDetector(
                                       onTap: () async {
-                                        controller.getTimeline();
+                                        // try {
+                                        //   var permission =
+                                        //       await allowLocationPermission();
+                                        //   debugPrint(
+                                        //       "permission:${permission.toString()}");
+                                        //   var res;
+                                        //   res = await FlutterBackgroundService()
+                                        //       .isRunning();
+                                        //   if (res == false) {
+                                        //     debugPrint("res:${res.toString()}");
+                                        //     await initializeService();
+                                        //     FlutterBackgroundService()
+                                        //         .invoke('setAsForeground');
+                                        //   }else{
+                                        //     FlutterBackgroundService().invoke('stopService');
+                                        //   }
+                                        // } catch (e) {
+                                        //   debugPrint("ERROR:${e.toString()}");
+                                        // }
 
+                                        controller.getTimeline();
                                       },
                                       child: Container(
                                         padding: const EdgeInsets.symmetric(
@@ -215,7 +241,8 @@ class HomeScreen extends GetView<HomeController> {
                                     ),
                                     GestureDetector(
                                       onTap: () async {
-                                        Get.toNamed(Routes.notification);
+
+                                         Get.toNamed(Routes.notification);
                                       },
                                       child: const Icon(
                                         Icons.circle_notifications,
@@ -223,6 +250,22 @@ class HomeScreen extends GetView<HomeController> {
                                         color: secondaryColor,
                                       ),
                                     ),
+                                    // GestureDetector(
+                                    //   onTap: () async {
+                                    //
+                                    //
+                                    //     // var res = await FlutterBackgroundService().isRunning();
+                                    //     //
+                                    //     // debugPrint("res:${res.toString()}");
+                                    //      controller.closeOverlay();
+                                    //     // Get.toNamed(Routes.notification);
+                                    //   },
+                                    //   child: const Icon(
+                                    //     Icons.close,
+                                    //     size: 34,
+                                    //     color: Colors.red,
+                                    //   ),
+                                    // ),
                                     // IconButton(
                                     //     onPressed: () async {
                                     //       var res = await FlutterBackgroundService().isRunning();
@@ -304,6 +347,7 @@ class HomeScreen extends GetView<HomeController> {
                       width: MediaQuery.of(context).size.width * 0.9,
                       shimmer: false,
                       action: () async {
+
                         await controller
                             .changeStatus(controller.settings.value!);
 

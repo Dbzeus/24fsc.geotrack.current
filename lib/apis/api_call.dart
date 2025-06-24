@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:alice_dio/alice_dio_adapter.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import 'package:geotrack24fsc/apis/urls.dart';
 import 'package:geotrack24fsc/models/ClientListResponse.dart';
 import 'package:geotrack24fsc/models/FeedbackResponse.dart';
@@ -29,19 +32,42 @@ import '../models/emp_lat_lng.dart';
 import '../models/leave_list_response.dart';
 import '../models/notification_response.dart';
 
+
 class ApiCall {
   static final ApiCall _instance = ApiCall._internal();
 
   static final Dio _dio = Dio();
 
-  factory ApiCall() {
+   factory ApiCall() {
     return _instance;
   }
 
   ApiCall._internal() {
     _dio.options.baseUrl = BASE_URL;
     _dio.options.connectTimeout = const Duration(minutes: 10);
-    _dio.interceptors.add(MyApp.alice.getDioInterceptor());
+
+
+    // _dio.interceptors.add(alice.getDioInterceptor());
+
+    try {
+      if (WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed) {
+
+        if(kDebugMode){
+          MyApp.alice.addAdapter(MyApp.aliceDioAdapter);
+
+          _dio.interceptors.add(MyApp.aliceDioAdapter);
+        }
+      }
+    } catch (e, s) {
+      debugPrint("Alice error: $e\n$s");
+    }
+
+
+
+
+
+    // _dio.interceptors.add(MyApp.alice.getDioInterceptor());
+
     /*if (kDebugMode) {
       _dio.interceptors.add(MyApp.alice.getDioInterceptor());
     }*/

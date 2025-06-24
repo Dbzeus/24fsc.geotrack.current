@@ -2,7 +2,8 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:device_info/device_info.dart';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:disable_battery_optimization/disable_battery_optimization.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,7 +13,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geotrack24fsc/utils/dialogs.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../../apis/api_call.dart';
@@ -152,7 +154,7 @@ class MobileLoginController extends GetxController {
       'manufacturer': build.manufacturer,
       'arm': build.supportedAbis.toString(),
       'model': build.model,
-      'deviceid': build.androidId,
+      'deviceid': build.id,
     };
   }
 

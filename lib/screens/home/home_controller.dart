@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:device_info/device_info.dart';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -11,7 +12,8 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:intl/intl.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../apis/api_call.dart';
@@ -27,6 +29,7 @@ import '../../utils/loader.dart';
 import '../../utils/location_permission.dart';
 import '../../utils/session.dart';
 import '../../widgets/custom_button.dart';
+import '../service_overlay/service_overlay_controller.dart';
 
 class HomeController extends GetxController {
   RxString userName = ''.obs,
@@ -68,9 +71,9 @@ class HomeController extends GetxController {
     box.write(Session.appVersion, version.value);
 
     if (Platform.isAndroid) {
-      deviceId = (await deviceInfoPlugin.androidInfo).androidId;
+      deviceId = (await deviceInfoPlugin.androidInfo).id;
     } else if (Platform.isIOS) {
-      deviceId = (await deviceInfoPlugin.iosInfo).identifierForVendor;
+      deviceId = (await deviceInfoPlugin.iosInfo).identifierForVendor!;
     }
     box.write(Session.deviceID, deviceId);
   }
@@ -78,6 +81,11 @@ class HomeController extends GetxController {
   @override
   Future<void> onReady() async {
     getTimeline();
+    final bool status = await FlutterOverlayWindow.isPermissionGranted();
+    if (status == false) {
+      final bool? status = await FlutterOverlayWindow.requestPermission();
+    }
+
     await Future.delayed(const Duration(seconds: 4), () async {
       checkLogIn();
       debugPrint("22222:");
@@ -128,6 +136,39 @@ class HomeController extends GetxController {
     });
   }
 
+  showOverlay() async {
+    // await FlutterOverlayWindow.showOverlay();
+    // final bool status = await FlutterOverlayWindow.isPermissionGranted();
+    // if (status == false) {
+    //   final bool? status = await FlutterOverlayWindow.requestPermission();
+    //
+    // }else{
+    await FlutterOverlayWindow.showOverlay(
+      enableDrag: true,
+      // overlayTitle: "Location Fetcher",
+      // overlayContent: "Running background location task",
+      height: 150,
+      width: 150,
+      alignment: OverlayAlignment.centerLeft,
+      visibility: NotificationVisibility.visibilitySecret,
+      flag: OverlayFlag.clickThrough,
+      positionGravity: PositionGravity.auto,
+      startPosition: OverlayPosition(1, 1),
+    );
+  }
+
+  closeOverlay() async {
+    await FlutterOverlayWindow.closeOverlay();
+    debugPrint("stop service");
+    debugPrint("AUTO FETCH in stop:${box.read(Session.isAutoFetch)}");
+    var res = await FlutterBackgroundService().isRunning();
+    debugPrint("running: 4 :${res.toString()}");
+    if (res) {
+      FlutterBackgroundService().invoke('stopService');
+      box.write(Session.isRunnerCancelling, false);
+    }
+  }
+
   backgroundAccess() async {
     debugPrint("11111:");
     bool isServiceEnable = await Geolocator.isLocationServiceEnabled();
@@ -135,7 +176,8 @@ class HomeController extends GetxController {
       await Geolocator.getCurrentPosition();
       //await Geolocator.openLocationSettings();
     }
-    PermissionStatus res =await Permission.ignoreBatteryOptimizations.request();
+    PermissionStatus res =
+        await Permission.ignoreBatteryOptimizations.request();
     /*if(res != PermissionStatus.granted){
       Get.defaultDialog(
           title: "Allow permission for Battery optimisation ",
@@ -169,7 +211,6 @@ class HomeController extends GetxController {
   checkLogIn() {
     var currentDate = showFormat.format(DateTime.now());
     if (box.read(Session.logInDate) == null) {
-
       box.write(Session.logInDate, currentDate);
       debugPrint("First Date: $currentDate");
     } else {
@@ -250,7 +291,7 @@ class HomeController extends GetxController {
     }
   }
 
- /* checkLocationPermissions(ApplicationSettingResponseData status) async {
+  /* checkLocationPermissions(ApplicationSettingResponseData status) async {
     PermissionStatus sts = await Permission.locationAlways.request();
     if (sts.isGranted) {
       changeStatus(status);
@@ -259,7 +300,7 @@ class HomeController extends GetxController {
 
     }
 
-    *//*debugPrint("res location: ${res.toString()}");
+    */ /*debugPrint("res location: ${res.toString()}");
     if (res) {
       debugPrint("res0.5: ${res.toString()}");
 
@@ -282,12 +323,13 @@ class HomeController extends GetxController {
           debugPrint("res3: ${res.toString()}");
         }
       });
-    }*//*
+    }*/ /*
   }*/
 
   changeStatus(ApplicationSettingResponseData status) async {
     try {
       if (await isNetConnected()) {
+        // backgroundAccess();
         showLoader(title: 'Load Setting');
         await getSettings();
         hideLoader();
@@ -365,7 +407,8 @@ class HomeController extends GetxController {
               altitudeAccuracy: 0,
               headingAccuracy: 0);
         }
-        isCanceled(true);// setting true, because its always true for slider button. if position gives null then only,change to false
+        isCanceled(
+            true); // setting true, because its always true for slider button. if position gives null then only,change to false
         if (position == null) {
           isCanceled(false);
           return;
@@ -395,53 +438,27 @@ class HomeController extends GetxController {
             showToastMsg('${response['RtnMessage']}');
             box.write(
                 Session.isAutoFetch, status.status.first.statusID.toString());
-            // debugPrint("status id: ${box.read(Session.isAutoFetch).toString()}");
-            // debugPrint("AUTO FETCH:${box.read(Session.isAutoFetch)}");
             if (int.parse(box.read(Session.isAutoFetch)) == 1) // 1 is login
             {
-              // debugPrint(
-              //     "AUTO FETCH in foreground:${box.read(Session.isAutoFetch)}");
               var permission = await allowLocationPermission();
               if (permission == true) {
-                var res;
-                res = await FlutterBackgroundService().isRunning();
-                // debugPrint("running: 1 :${res.toString()}");
-                if (res) {
-                  // debugPrint("stop and restart");
-                  FlutterBackgroundService().invoke('stopService');
-                  res = await FlutterBackgroundService().isRunning();
-                  // debugPrint("running: 2 :${res.toString()}");
-                  if (res == false) {
-                    await initializeService();
-                    FlutterBackgroundService().invoke('setAsForeground');
-                    /*await Future.delayed(const Duration(seconds:  5));
-                   // Call the second method
-                  res = await FlutterBackgroundService().isRunning();
-                  if(res){
-                    FlutterBackgroundService().invoke('setAsBackground');
-                    debugPrint("Service time in home: ${time.toString()}");
-                  }*/
-                    box.write(Session.isRunnerCancelling, true);
-                  }
+                debugPrint("ServiceOverlayController creating");
+                if (!Get.isRegistered<ServiceOverlayController>()) {
+                  Get.lazyPut(() => ServiceOverlayController());
+                  debugPrint("ServiceOverlayController initialising");
+                  final con = Get.find<ServiceOverlayController>();
+                  debugPrint("ServiceOverlayController finding");
+                  con.onInit();
                 } else {
-                  // debugPrint("start service");
-                  await initializeService();
-                  FlutterBackgroundService().invoke('setAsForeground');
-                  box.write(Session.isRunnerCancelling, true);
+                  debugPrint("ServiceOverlayController already created");
+                  final con = Get.find<ServiceOverlayController>();
+                  debugPrint("ServiceOverlayController finding in created");
+                  con.onInit();
                 }
-                //FlutterBackgroundService().invoke('setAsBackground');
+                showOverlay();
               }
-            } else
-            /*if (int.parse(box.read(Session.isAutoFetch)) == 2)*/ //  2 is logout
-            {
-              debugPrint("stop service");
-              debugPrint("AUTO FETCH in stop:${box.read(Session.isAutoFetch)}");
-              var res = await FlutterBackgroundService().isRunning();
-              debugPrint("running: 4 :${res.toString()}");
-              if (res) {
-                FlutterBackgroundService().invoke('stopService');
-                box.write(Session.isRunnerCancelling, false);
-              }
+            } else {
+              closeOverlay();
             }
           } else {
             showAlert(

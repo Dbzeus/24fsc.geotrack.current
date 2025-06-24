@@ -132,8 +132,17 @@ Future<Position?> getCurrentLocation({bool showMap = true}) async {
 }
 
 Future<Position?> getCurrentLocationForBackgroundFetch() async {
-  Position? data = await Geolocator.getCurrentPosition();
-  return data;
+
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if(serviceEnabled){
+    Position? data = await Geolocator.getCurrentPosition();
+    return data;
+  }else{
+    return null;
+  }
+
+
+
 }
 
 Future<Position?> getLocation({bool showMap = true}) async {
