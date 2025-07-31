@@ -3,8 +3,10 @@
 import 'package:alice/alice.dart';
 import 'package:alice/model/alice_configuration.dart';
 import 'package:alice_dio/alice_dio_adapter.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geotrack24fsc/helpers/colors.dart';
 import 'package:geotrack24fsc/routes/app_pages.dart';
@@ -22,14 +24,37 @@ import 'package:google_fonts/google_fonts.dart';
 
 // overlay entry point
 
-@pragma('vm:entry-point',true)
+// @pragma('vm:entry-point',true)
 void  main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
+   WidgetsFlutterBinding.ensureInitialized();
   //await initializeService();
   //debugPaintSizeEnabled = true; for layout bound
   //check session
   await GetStorage.init();
   //firebase
+
+  // try {
+  //   final apps = Firebase.apps;
+  //   if (apps.isEmpty) {
+  //     await Firebase.initializeApp();
+  //   }
+  // } catch (e) {
+  //   print("Firebase already initialized: $e");
+  // }\
+
+
+
+   if(Firebase.apps.isEmpty){
+     await Firebase.initializeApp(
+         name: "24fsc geotrack",
+         options: const FirebaseOptions(
+           apiKey: 'AIzaSyD-yyKSEHCxTnszn2wASaPklTxoCU0U5oQ',
+           appId: '1:734068954892:android:dd7d9d64ad3260cd0e5b29',
+           messagingSenderId: '734068954892',
+           projectId: 'fscgeotrack-9bf44',)
+     );
+   }
+
   await FirebaseNotifcation().initialize();
 
   GetStorage box = GetStorage();
@@ -44,6 +69,7 @@ void  main() async {
   }
   runApp(MyApp(initial));
 }
+
 
 @pragma('vm:entry-point',true)
 Future<void> initializeService() async {

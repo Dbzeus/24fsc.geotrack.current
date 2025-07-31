@@ -16,22 +16,41 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 final FlutterLocalNotificationsPlugin flutterLocalNotificationplugin =
 FlutterLocalNotificationsPlugin();
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  debugPrint("Handling a background message : ${message.messageId}");
-}
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp();
+//   debugPrint("Handling a background message : ${message.messageId}");
+// }
 
 class FirebaseNotifcation {
   initialize() async {
-    await Firebase.initializeApp(
-        options: const FirebaseOptions(
-          apiKey: 'AIzaSyD-yyKSEHCxTnszn2wASaPklTxoCU0U5oQ',
-          appId: '1:734068954892:android:dd7d9d64ad3260cd0e5b29',
-          messagingSenderId: '734068954892',
-          projectId: 'fscgeotrack-9bf44',)
-    );
+
+
+    // debugPrint("Firebase:${Firebase.apps.isEmpty.toString()}");
+    // if (Firebase.apps.isEmpty) {
+    //   await Firebase.initializeApp(
+    //       options: const FirebaseOptions(
+    //         apiKey: 'AIzaSyD-yyKSEHCxTnszn2wASaPklTxoCU0U5oQ',
+    //         appId: '1:734068954892:android:dd7d9d64ad3260cd0e5b29',
+    //         messagingSenderId: '734068954892',
+    //         projectId: 'fscgeotrack-9bf44',)
+    //   );
+    // }
+
+    // await Firebase.initializeApp(
+    //   name: "24fsc geotrack",
+    //         options: const FirebaseOptions(
+    //
+    //
+    //           apiKey: 'AIzaSyD-yyKSEHCxTnszn2wASaPklTxoCU0U5oQ',
+    //           appId: '1:734068954892:android:dd7d9d64ad3260cd0e5b29',
+    //           messagingSenderId: '734068954892',
+    //           projectId: 'fscgeotrack-9bf44',)
+    //     );
+
     // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     debugPrint(await FirebaseMessaging.instance.getToken());
+
+
 
     var intializationSettingsAndroid =
     const AndroidInitializationSettings('mipmap/launcher_icon');

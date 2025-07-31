@@ -142,7 +142,6 @@ Future<Position?> getCurrentLocationForBackgroundFetch() async {
   }
 
 
-
 }
 
 Future<Position?> getLocation({bool showMap = true}) async {

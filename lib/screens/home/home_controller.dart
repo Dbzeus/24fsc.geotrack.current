@@ -149,11 +149,12 @@ class HomeController extends GetxController {
       // overlayContent: "Running background location task",
       height: 150,
       width: 150,
-      alignment: OverlayAlignment.centerLeft,
-      visibility: NotificationVisibility.visibilitySecret,
-      flag: OverlayFlag.clickThrough,
-      positionGravity: PositionGravity.auto,
-      startPosition: OverlayPosition(1, 1),
+      // alignment: OverlayAlignment.centerLeft,
+      // visibility: NotificationVisibility.visibilitySecret,
+      // flag: OverlayFlag.clickThrough,
+      //
+      // positionGravity: PositionGravity.auto,
+      // startPosition: OverlayPosition(1, 1),
     );
   }
 
@@ -172,8 +173,16 @@ class HomeController extends GetxController {
   backgroundAccess() async {
     debugPrint("11111:");
     bool isServiceEnable = await Geolocator.isLocationServiceEnabled();
+    debugPrint("isServiceEnable:${isServiceEnable.toString()}");
     if (!isServiceEnable) {
+
       await Geolocator.getCurrentPosition();
+      // var res= await Geolocator.requestPermission();
+      // debugPrint("res:${res.toString()}");
+      // if(res){
+      //   await Geolocator.getCurrentPosition();
+      // }
+
       //await Geolocator.openLocationSettings();
     }
     PermissionStatus res =
@@ -511,7 +520,7 @@ class HomeController extends GetxController {
     }
   }
 
-  showChatHead() async {
-    await FlutterOverlayWindow.showOverlay();
-  }
+  // showChatHead() async {
+  //   await FlutterOverlayWindow.showOverlay();
+  // }
 }

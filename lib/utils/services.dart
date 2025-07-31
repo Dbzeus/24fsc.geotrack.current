@@ -29,7 +29,10 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
   await GetStorage.init();
   final box = GetStorage();
   // int time = 2;
-   int time = await box.read(Session.serviceTimeInterval) /*?? 10*/;
+
+  // int time = 2;
+
+    int time = await box.read(Session.serviceTimeInterval) /*?? 10*/;
   String Autologouttime = await box.read(Session.autoLogoutTime) /*?? 10*/;
   debugPrint("Service time in service: ${time.toString()}");
   Timer.periodic(Duration(minutes: time), (timer) async {

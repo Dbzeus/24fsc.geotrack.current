@@ -305,7 +305,7 @@ class ActivitiesController extends GetxController {
     try {
       if (response != null) {
         if (response["routes"].isNotEmpty) {
-          var res = PolylinePoints().decodePolyline(
+          var res = PolylinePoints.decodePolyline(
               response["routes"][0]["overview_polyline"]["points"]);
 
           for (var i in res) {
