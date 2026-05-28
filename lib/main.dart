@@ -44,10 +44,9 @@ void  main() async {
 
 
 
-   if(Firebase.apps.isEmpty){
-     await Firebase.initializeApp(
-         name: "24fsc geotrack",
-         options: const FirebaseOptions(
+    if(Firebase.apps.isEmpty){
+      await Firebase.initializeApp(
+          options: const FirebaseOptions(
            apiKey: 'AIzaSyD-yyKSEHCxTnszn2wASaPklTxoCU0U5oQ',
            appId: '1:734068954892:android:dd7d9d64ad3260cd0e5b29',
            messagingSenderId: '734068954892',

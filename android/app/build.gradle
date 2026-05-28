@@ -35,8 +35,8 @@ apply from: "${background_geolocation.projectDir}/background_geolocation.gradle"
 
 android {
     namespace "com.dbzeus.geotrack_24fsc"
-    compileSdkVersion  35//rootProject.ext.compileSdkVersion
-    ndkVersion "26.1.10909125"/*flutter.ndkVersion*/
+    compileSdkVersion  36//rootProject.ext.compileSdkVersion
+    ndkVersion "28.2.13676358"/*flutter.ndkVersion*/
 
 //    compileOptions {
 //        sourceCompatibility JavaVersion.VERSION_1_8
@@ -64,7 +64,7 @@ android {
         applicationId "com.dbzeus.geotrack_24fsc"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 23//rootProject.ext.minSdkVersion
+        minSdkVersion flutter.minSdkVersion//rootProject.ext.minSdkVersion
         targetSdkVersion 34//rootProject.ext.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
