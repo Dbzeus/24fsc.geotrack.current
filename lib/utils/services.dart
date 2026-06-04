@@ -36,59 +36,64 @@ Future<void> onStart(ServiceInstance serviceInstance) async {
   String Autologouttime = await box.read(Session.autoLogoutTime) /*?? 10*/;
   debugPrint("Service time in service: ${time.toString()}");
   Timer.periodic(Duration(minutes: time), (timer) async {
-    if (serviceInstance is AndroidServiceInstance) {
-      if (await serviceInstance.isForegroundService()) {
-        //debugPrint("foreground service is running");
-        /*await FlutterLocalNotificationsPlugin().show(1, "24FSC", "App is running....",const NotificationDetails(
-          android: AndroidNotificationDetails(
-            '24FSC',
-            '24FSC Important',
-            channelDescription: 'DBZeus 24FSC app notification',
-          ),
-        ));*/
+    try {
+      if (serviceInstance is AndroidServiceInstance) {
+        if (await serviceInstance.isForegroundService()) {
+          //debugPrint("foreground service is running");
+          /*await FlutterLocalNotificationsPlugin().show(1, "24FSC", "App is running....",const NotificationDetails(
+            android: AndroidNotificationDetails(
+              '24FSC',
+              '24FSC Important',
+              channelDescription: 'DBZeus 24FSC app notification',
+            ),
+          ));*/
 
-        serviceInstance.setForegroundNotificationInfo(
-            title: "24Fsc", content: "App is running........");
+          serviceInstance.setForegroundNotificationInfo(
+              title: "24Fsc", content: "App is running........");
 
-        //backgroundLocationService();
-        //var response = await ApiCall().getDepartments(22);
+          //backgroundLocationService();
+          //var response = await ApiCall().getDepartments(22);
+        }
       }
-    }
 
-    DateFormat timeFormat = DateFormat("HH:mm:ss");
+      DateFormat timeFormat = DateFormat("HH:mm:ss");
 
-    DateTime currentTime =
-        timeFormat.parse(DateTime.now().toString().split(" ")[1].split(".")[0]);
-    DateTime logoutTime = timeFormat.parse(Autologouttime);
+      DateTime currentTime =
+          timeFormat.parse(DateTime.now().toString().split(" ")[1].split(".")[0]);
+      DateTime logoutTime = timeFormat.parse(Autologouttime);
 
-    //debugPrint("ABCD1");
+      //debugPrint("ABCD1");
 
-    if (currentTime.isAfter(logoutTime)) {
-      //debugPrint("ABCD2");
-      await GetStorage.init();
-      final box = GetStorage();
-      // debugPrint(
-      //     "ABCD Session:${box.read(Session.isRunnerCancelling).toString()}");
-      if (box.read(Session.isRunnerCancelling) != null) {
-        if (box.read(Session.isRunnerCancelling) == true) {
-          // debugPrint("ABCD3");
-          var res = await backgroundLocationService("6"); //auto logout
-          if (res == true) {
-            // debugPrint("ABCD4");
-            box.write(Session.isRunnerCancelling, false);
-            serviceInstance.stopSelf();
-            await FlutterOverlayWindow.closeOverlay();
+      if (currentTime.isAfter(logoutTime)) {
+        //debugPrint("ABCD2");
+        await GetStorage.init();
+        final box = GetStorage();
+        // debugPrint(
+        //     "ABCD Session:${box.read(Session.isRunnerCancelling).toString()}");
+        if (box.read(Session.isRunnerCancelling) != null) {
+          if (box.read(Session.isRunnerCancelling) == true) {
+            // debugPrint("ABCD3");
+            var res = await backgroundLocationService("6"); //auto logout
+            if (res == true) {
+              // debugPrint("ABCD4");
+              box.write(Session.isRunnerCancelling, false);
+              serviceInstance.stopSelf();
+              await FlutterOverlayWindow.closeOverlay();
+            }
           }
+        } else {
+          // debugPrint("ABCD Foreground");
+          serviceInstance.invoke("setAsForeground");
         }
       } else {
-        // debugPrint("ABCD Foreground");
-        serviceInstance.invoke("setAsForeground");
+        // debugPrint("ABCD5");
+        await backgroundLocationService("3"); // auto fetch
       }
-    } else {
-      // debugPrint("ABCD5");
-      await backgroundLocationService("3"); // auto fetch
+    } catch (e) {
+      debugPrint("Background Timer Error: ${e.toString()}");
+    } finally {
+      serviceInstance.invoke('update');
     }
-    serviceInstance.invoke('update');
   });
 }
 

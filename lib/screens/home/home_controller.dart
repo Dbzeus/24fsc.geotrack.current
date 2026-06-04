@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
@@ -31,7 +32,7 @@ import '../../utils/session.dart';
 import '../../widgets/custom_button.dart';
 import '../service_overlay/service_overlay_controller.dart';
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with WidgetsBindingObserver {
   RxString userName = ''.obs,
       userImage = ''.obs,
       msg = 'No Record\'s Found'.obs;
@@ -42,6 +43,8 @@ class HomeController extends GetxController {
   final box = GetStorage();
   RxList timelines = RxList();
   RxBool isLoading = false.obs, isCanceled = true.obs;
+  
+  StreamSubscription? _updateSubscription;
 
   AppUpdateInfo? _updateInfo;
 
@@ -61,6 +64,13 @@ class HomeController extends GetxController {
 
     //debugPrint("TIME123:${DateTime.now().toString().split(" ")[1].substring(0,5)}");
     super.onInit();
+    
+    _updateSubscription = FlutterBackgroundService().on('update').listen((event) {
+      debugPrint("Background update received. Auto-refreshing timeline.");
+      getTimeline();
+    });
+
+    WidgetsBinding.instance.addObserver(this);
     currentDate(DateFormat('MMM dd yyyy').format(DateTime.now()));
     packageInfo = await PackageInfo.fromPlatform();
     userName(box.read(Session.firstName) ?? '');
@@ -252,8 +262,19 @@ class HomeController extends GetxController {
     }
   }
 
+  @override
+  void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _updateSubscription?.cancel();
+    super.onClose();
+  }
+
+  @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     debugPrint("STATE: ${state.toString()}");
+    if (state == AppLifecycleState.resumed) {
+      getTimeline();
+    }
   }
 
   getTimeline() async {

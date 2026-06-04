@@ -56,8 +56,9 @@ class HomeScreen extends GetView<HomeController> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       GestureDetector(
-                        onTap: () {
-                          Get.toNamed(Routes.profile);
+                        onTap: () async {
+                          await Get.toNamed(Routes.profile);
+                          controller.getTimeline();
                         },
                         child: Container(
                             width: 50,
@@ -241,8 +242,8 @@ class HomeScreen extends GetView<HomeController> {
                                     ),
                                     GestureDetector(
                                       onTap: () async {
-
-                                         Get.toNamed(Routes.notification);
+                                         await Get.toNamed(Routes.notification);
+                                         controller.getTimeline();
                                       },
                                       child: const Icon(
                                         Icons.circle_notifications,
